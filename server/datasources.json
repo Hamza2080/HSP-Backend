@@ -4,13 +4,12 @@
     "connector": "memory"
   },
   "mongoDB": {
-    "host": "localhost",
-    "port": 27017,
-    "url": "",
-    "database": "HSP",
-    "password": "",
+    "url": "mongodb+srv://easycarry:easycarry123@cluster0-ntcmj.mongodb.net/HSP?retryWrites=true&w=majority",
     "name": "mongoDB",
-    "user": "",
+    "useNewUrlParser": true,
+    "useFindAndModify": false,
+    "useCreateIndex": true,
+    "useUnifiedTopology": true,
     "connector": "mongodb"
   }
 }
