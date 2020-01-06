@@ -1,0 +1,36 @@
+{
+  "name": "town",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "string"
+    },
+    "owned_by": {
+      "type": "string",
+      "required": true
+    },
+    "developed_on": {
+      "type": "date",
+      "required": true,
+      "defaultFn": "$now"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "landlords": {
+      "type": "hasMany",
+      "model": "landlord",
+      "foreignKey": ""
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

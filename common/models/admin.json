@@ -13,7 +13,13 @@
     }
   },
   "validations": [],
-  "relations": {},
+  "relations": {
+    "towns": {
+      "type": "hasMany",
+      "model": "town",
+      "foreignKey": ""
+    }
+  },
   "acls": [
     {
       "accessType": "*",

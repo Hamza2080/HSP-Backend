@@ -1,0 +1,38 @@
+{
+  "name": "landlord",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "phone": {
+      "type": "string",
+      "required": true,
+      "default": "03111231231"
+    },
+    "cnic": {
+      "type": "number",
+      "required": true,
+      "default": 1111122222223
+    },
+    "address": {
+      "type": "string",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {
+    "lands": {
+      "type": "hasMany",
+      "model": "land",
+      "foreignKey": ""
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

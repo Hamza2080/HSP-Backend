@@ -23,24 +23,44 @@
   },
   "ACL": {
     "dataSource": "mongoDB",
-    "public": true
+    "public": false
   },
   "RoleMapping": {
     "dataSource": "mongoDB",
-    "public": true,
+    "public": false,
     "options": {
       "strictObjectIDCoercion": true
     }
   },
   "Role": {
     "dataSource": "mongoDB",
-    "public": true
+    "public": false
   },
   "Message": {
     "dataSource": null,
     "public": false
   },
   "Admin": {
+    "dataSource": "mongoDB",
+    "public": true
+  },
+  "land_payment_plan": {
+    "dataSource": "mongoDB",
+    "public": true
+  },
+  "landlord": {
+    "dataSource": "mongoDB",
+    "public": true
+  },
+  "land_measuring_unit": {
+    "dataSource": "mongoDB",
+    "public": true
+  },
+  "land": {
+    "dataSource": "mongoDB",
+    "public": true
+  },
+  "town": {
     "dataSource": "mongoDB",
     "public": true
   }

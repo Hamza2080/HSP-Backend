@@ -1,0 +1,50 @@
+{
+  "name": "land",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "total_land": {
+      "type": "number",
+      "required": true
+    },
+    "measuring_unit": {
+      "type": "string"
+    },
+    "acquired_date": {
+      "type": "date",
+      "required": true,
+      "defaultFn": "$now"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "landMeasuringUnits": {
+      "type": "hasOne",
+      "model": "land_measuring_unit",
+      "foreignKey": ""
+    },
+    "landlord": {
+      "type": "belongsTo",
+      "model": "landlord",
+      "foreignKey": ""
+    },
+    "town": {
+      "type": "belongsTo",
+      "model": "town",
+      "foreignKey": ""
+    },
+    "landPaymentPlans": {
+      "type": "hasOne",
+      "model": "land_payment_plan",
+      "foreignKey": ""
+    }
+  },
+  "acls": [],
+  "methods": {}
+}
