@@ -27,7 +27,7 @@
   },
   "RoleMapping": {
     "dataSource": "mongoDB",
-    "public": true,
+    "public": false,
     "options": {
       "strictObjectIDCoercion": true
     }
