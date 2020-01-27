@@ -1,0 +1,81 @@
+{
+  "name": "plot",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "size": {
+      "type": "number",
+      "required": true
+    },
+    "plotFront": {
+      "type": "string",
+      "required": true
+    },
+    "plotBack": {
+      "type": "string",
+      "required": true
+    },
+    "plotLeft": {
+      "type": "string",
+      "required": true
+    },
+    "plotRight": {
+      "type": "string",
+      "required": true
+    },
+    "purchase_date": {
+      "type": "date",
+      "required": true,
+      "defaultFn": "$now"
+    },
+    "measuring_unit": {
+      "type": "string",
+      "required": true
+    },
+    "plotType": {
+      "type": "string",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {
+    "invoices": {
+      "type": "hasMany",
+      "model": "invoice",
+      "foreignKey": ""
+    },
+    "landMeasuringUnits": {
+      "type": "hasOne",
+      "model": "land_measuring_unit",
+      "foreignKey": ""
+    },
+    "plotPaymentPlans": {
+      "type": "hasOne",
+      "model": "plot_payment_plan",
+      "foreignKey": ""
+    },
+    "plotcategories": {
+      "type": "hasOne",
+      "model": "plotcategory",
+      "foreignKey": ""
+    },
+    "customer": {
+      "type": "belongsTo",
+      "model": "Customer",
+      "foreignKey": ""
+    },
+    "plotPaymentHistories": {
+      "type": "hasMany",
+      "model": "plot_payment_history",
+      "foreignKey": ""
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

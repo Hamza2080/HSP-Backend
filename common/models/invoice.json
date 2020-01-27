@@ -1,55 +1,37 @@
 {
-  "name": "land",
+  "name": "invoice",
   "base": "PersistedModel",
   "idInjection": true,
   "options": {
     "validateUpsert": true
   },
   "properties": {
-    "name": {
-      "type": "string"
-    },
-    "total_land": {
-      "type": "number",
+    "type": {
+      "type": "string",
       "required": true
     },
-    "measuring_unit": {
-      "type": "string"
+    "amount": {
+      "type": "number",
+      "required": true,
+      "default": 0
     },
-    "acquired_date": {
+    "owner": {
+      "type": "string",
+      "required": true
+    },
+    "created_by": {
+      "type": "string",
+      "required": true,
+      "default": "admin"
+    },
+    "created_at": {
       "type": "date",
       "required": true,
       "defaultFn": "$now"
     }
   },
   "validations": [],
-  "relations": {
-    "landMeasuringUnits": {
-      "type": "hasOne",
-      "model": "land_measuring_unit",
-      "foreignKey": ""
-    },
-    "landlord": {
-      "type": "belongsTo",
-      "model": "landlord",
-      "foreignKey": ""
-    },
-    "town": {
-      "type": "belongsTo",
-      "model": "town",
-      "foreignKey": ""
-    },
-    "landPaymentPlans": {
-      "type": "hasOne",
-      "model": "land_payment_plan",
-      "foreignKey": ""
-    },
-    "invoices": {
-      "type": "hasMany",
-      "model": "invoice",
-      "foreignKey": ""
-    }
-  },
+  "relations": {},
   "acls": [
     {
       "accessType": "*",

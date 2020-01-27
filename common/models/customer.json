@@ -1,52 +1,46 @@
 {
-  "name": "land",
-  "base": "PersistedModel",
+  "name": "Customer",
+  "base": "User",
   "idInjection": true,
   "options": {
     "validateUpsert": true
   },
   "properties": {
     "name": {
-      "type": "string"
-    },
-    "total_land": {
-      "type": "number",
+      "type": "string",
       "required": true
     },
-    "measuring_unit": {
+    "cnic": {
+      "type": "string",
+      "required": true
+    },
+    "dob": {
       "type": "string"
     },
-    "acquired_date": {
+    "contact": {
+      "type": "string",
+      "required": true
+    },
+    "address": {
+      "type": "string",
+      "required": true
+    },
+    "registered_at": {
       "type": "date",
       "required": true,
       "defaultFn": "$now"
+    },
+    "userRole": {
+      "type": "string",
+      "required": true,
+      "default": "customer"
     }
   },
   "validations": [],
   "relations": {
-    "landMeasuringUnits": {
-      "type": "hasOne",
-      "model": "land_measuring_unit",
-      "foreignKey": ""
-    },
-    "landlord": {
-      "type": "belongsTo",
-      "model": "landlord",
-      "foreignKey": ""
-    },
-    "town": {
-      "type": "belongsTo",
-      "model": "town",
-      "foreignKey": ""
-    },
-    "landPaymentPlans": {
-      "type": "hasOne",
-      "model": "land_payment_plan",
-      "foreignKey": ""
-    },
-    "invoices": {
+    "plots": {
       "type": "hasMany",
-      "model": "invoice",
+      "model": "plot",
       "foreignKey": ""
     }
   },

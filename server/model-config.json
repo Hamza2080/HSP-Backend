@@ -63,5 +63,33 @@
   "town": {
     "dataSource": "mongoDB",
     "public": true
+  },
+  "plotcategory": {
+    "dataSource": "mongoDB",
+    "public": true
+  },
+  "plot_payment_plan": {
+    "dataSource": "mongoDB",
+    "public": true
+  },
+  "invoice": {
+    "dataSource": "mongoDB",
+    "public": true
+  },
+  "plot": {
+    "dataSource": "mongoDB",
+    "public": true
+  },
+  "Customer": {
+    "dataSource": "mongoDB",
+    "public": true
+  },
+  "authorized_dealer": {
+    "dataSource": "mongoDB",
+    "public": true
+  },
+  "plot_payment_history": {
+    "dataSource": "mongoDB",
+    "public": true
   }
 }

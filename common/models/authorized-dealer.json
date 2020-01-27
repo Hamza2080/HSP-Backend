@@ -1,5 +1,5 @@
 {
-  "name": "land",
+  "name": "authorized_dealer",
   "base": "PersistedModel",
   "idInjection": true,
   "options": {
@@ -7,43 +7,44 @@
   },
   "properties": {
     "name": {
-      "type": "string"
-    },
-    "total_land": {
-      "type": "number",
+      "type": "string",
       "required": true
     },
-    "measuring_unit": {
+    "office_name": {
+      "type": "string",
+      "required": true
+    },
+    "office_address": {
+      "type": "string",
+      "required": true
+    },
+    "office_contact": {
       "type": "string"
     },
-    "acquired_date": {
+    "personal_contact": {
+      "type": "string",
+      "required": true
+    },
+    "authorized_on": {
       "type": "date",
       "required": true,
       "defaultFn": "$now"
+    },
+    "authorized_with": {
+      "type": "string",
+      "default": "town name"
+    },
+    "cnic": {
+      "type": "string",
+      "required": true
+    },
+    "commision_percentage": {
+      "type": "number",
+      "required": true
     }
   },
   "validations": [],
   "relations": {
-    "landMeasuringUnits": {
-      "type": "hasOne",
-      "model": "land_measuring_unit",
-      "foreignKey": ""
-    },
-    "landlord": {
-      "type": "belongsTo",
-      "model": "landlord",
-      "foreignKey": ""
-    },
-    "town": {
-      "type": "belongsTo",
-      "model": "town",
-      "foreignKey": ""
-    },
-    "landPaymentPlans": {
-      "type": "hasOne",
-      "model": "land_payment_plan",
-      "foreignKey": ""
-    },
     "invoices": {
       "type": "hasMany",
       "model": "invoice",

@@ -1,5 +1,5 @@
 {
-  "name": "land",
+  "name": "plotcategory",
   "base": "PersistedModel",
   "idInjection": true,
   "options": {
@@ -9,47 +9,19 @@
     "name": {
       "type": "string"
     },
-    "total_land": {
-      "type": "number",
-      "required": true
+    "created_by": {
+      "type": "string",
+      "required": true,
+      "default": "admin"
     },
-    "measuring_unit": {
-      "type": "string"
-    },
-    "acquired_date": {
+    "created_at": {
       "type": "date",
       "required": true,
       "defaultFn": "$now"
     }
   },
   "validations": [],
-  "relations": {
-    "landMeasuringUnits": {
-      "type": "hasOne",
-      "model": "land_measuring_unit",
-      "foreignKey": ""
-    },
-    "landlord": {
-      "type": "belongsTo",
-      "model": "landlord",
-      "foreignKey": ""
-    },
-    "town": {
-      "type": "belongsTo",
-      "model": "town",
-      "foreignKey": ""
-    },
-    "landPaymentPlans": {
-      "type": "hasOne",
-      "model": "land_payment_plan",
-      "foreignKey": ""
-    },
-    "invoices": {
-      "type": "hasMany",
-      "model": "invoice",
-      "foreignKey": ""
-    }
-  },
+  "relations": {},
   "acls": [
     {
       "accessType": "*",

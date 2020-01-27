@@ -1,52 +1,33 @@
 {
-  "name": "land",
+  "name": "plot_payment_history",
   "base": "PersistedModel",
   "idInjection": true,
   "options": {
     "validateUpsert": true
   },
   "properties": {
-    "name": {
-      "type": "string"
-    },
-    "total_land": {
-      "type": "number",
+    "payment_date": {
+      "type": "date",
       "required": true
     },
-    "measuring_unit": {
-      "type": "string"
+    "payment_by": {
+      "type": "string",
+      "required": true
     },
-    "acquired_date": {
-      "type": "date",
-      "required": true,
-      "defaultFn": "$now"
+    "payment_to": {
+      "type": "string",
+      "required": true
+    },
+    "amount": {
+      "type": "number",
+      "required": true
     }
   },
   "validations": [],
   "relations": {
-    "landMeasuringUnits": {
-      "type": "hasOne",
-      "model": "land_measuring_unit",
-      "foreignKey": ""
-    },
-    "landlord": {
+    "plot": {
       "type": "belongsTo",
-      "model": "landlord",
-      "foreignKey": ""
-    },
-    "town": {
-      "type": "belongsTo",
-      "model": "town",
-      "foreignKey": ""
-    },
-    "landPaymentPlans": {
-      "type": "hasOne",
-      "model": "land_payment_plan",
-      "foreignKey": ""
-    },
-    "invoices": {
-      "type": "hasMany",
-      "model": "invoice",
+      "model": "plot",
       "foreignKey": ""
     }
   },
