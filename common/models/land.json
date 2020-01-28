@@ -24,11 +24,6 @@
   },
   "validations": [],
   "relations": {
-    "landMeasuringUnits": {
-      "type": "hasOne",
-      "model": "land_measuring_unit",
-      "foreignKey": ""
-    },
     "landlord": {
       "type": "belongsTo",
       "model": "landlord",

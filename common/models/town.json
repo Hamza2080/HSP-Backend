@@ -29,6 +29,11 @@
       "type": "hasMany",
       "model": "landlord",
       "foreignKey": ""
+    },
+    "plots": {
+      "type": "hasMany",
+      "model": "plot",
+      "foreignKey": ""
     }
   },
   "acls": [

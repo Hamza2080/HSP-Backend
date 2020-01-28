@@ -50,11 +50,6 @@
       "model": "invoice",
       "foreignKey": ""
     },
-    "landMeasuringUnits": {
-      "type": "hasOne",
-      "model": "land_measuring_unit",
-      "foreignKey": ""
-    },
     "plotPaymentPlans": {
       "type": "hasOne",
       "model": "plot_payment_plan",

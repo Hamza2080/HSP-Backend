@@ -12,7 +12,18 @@
     }
   },
   "validations": [],
-  "relations": {},
+  "relations": {
+    "lands": {
+      "type": "hasOne",
+      "model": "land",
+      "foreignKey": ""
+    },
+    "plots": {
+      "type": "hasOne",
+      "model": "plot",
+      "foreignKey": ""
+    }
+  },
   "acls": [
     {
       "accessType": "*",
