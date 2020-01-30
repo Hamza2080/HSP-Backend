@@ -1,0 +1,31 @@
+{
+  "name": "installment",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "installment": {
+      "type": [
+        "object"
+      ],
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {
+    "plot": {
+      "type": "belongsTo",
+      "model": "plot",
+      "foreignKey": ""
+    },
+    "land": {
+      "type": "belongsTo",
+      "model": "land",
+      "foreignKey": ""
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

@@ -20,6 +20,10 @@
       "type": "date",
       "required": true,
       "defaultFn": "$now"
+    },
+    "isAmountCleared" : {
+      "type": "boolean",
+      "default" : false
     }
   },
   "validations": [],
@@ -32,11 +36,6 @@
     "town": {
       "type": "belongsTo",
       "model": "town",
-      "foreignKey": ""
-    },
-    "landPaymentPlans": {
-      "type": "hasOne",
-      "model": "land_payment_plan",
       "foreignKey": ""
     },
     "invoices": {

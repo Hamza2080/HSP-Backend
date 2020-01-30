@@ -90,6 +90,10 @@
   },
   "plot_payment_history": {
     "dataSource": "mongoDB",
+    "public": false
+  },
+  "installment": {
+    "dataSource": "mongoDB",
     "public": true
   }
 }

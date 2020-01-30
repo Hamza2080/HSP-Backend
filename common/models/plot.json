@@ -5,9 +5,16 @@
   "options": {
     "validateUpsert": true
   },
+  "hidden" : [
+    "installments"
+  ],
   "properties": {
     "name": {
       "type": "string"
+    },
+    "plotNumber": {
+      "type": "number",
+      "required": true
     },
     "size": {
       "type": "number",
@@ -41,6 +48,22 @@
     "plotType": {
       "type": "string",
       "required": true
+    },
+    "isAmountClear" : {
+      "type": "boolean",
+      "default" : false
+    },
+    "amountReceived" : {
+      "type": "number",
+      "default" : 0
+    },
+    "amountRemaining" : {
+      "type": "number"
+    },
+    "installments": {
+      "type": [
+        "object"
+      ]
     }
   },
   "validations": [],
@@ -48,11 +71,6 @@
     "invoices": {
       "type": "hasMany",
       "model": "invoice",
-      "foreignKey": ""
-    },
-    "plotPaymentPlans": {
-      "type": "hasOne",
-      "model": "plot_payment_plan",
       "foreignKey": ""
     },
     "plotcategories": {

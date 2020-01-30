@@ -5,6 +5,9 @@
   "options": {
     "validateUpsert": true
   },
+  "hidden" : [
+    "total_no_of_installment"
+  ],
   "properties": {
     "payment_plan_name": {
       "type": "string",
@@ -14,11 +17,19 @@
       "type": "string",
       "required": true
     },
-    "payment_plan_duration": {
-      "type": "string",
+    "downPayment": {
+      "type": "number",
+      "required": true
+    },
+    "isMonthlyPlan": {
+      "type": "boolean",
       "required": true,
-      "description": "1 Month or 1 Year, these two formats are acceptable",
-      "default": "1 Year"
+      "default": false
+    },
+    "isYearlyPlan": {
+      "type": "boolean",
+      "required": true,
+      "default": false
     },
     "first_payment": {
       "type": "string",
@@ -32,9 +43,7 @@
       "default": "1 Month"
     },
     "total_no_of_installment": {
-      "type": "number",
-      "required": true,
-      "default": 12
+      "type": "number"
     },
     "total_amount": {
       "type": "number",
@@ -43,11 +52,6 @@
     "installment_amount": {
       "type": "number",
       "required": true
-    },
-    "status": {
-      "type": [
-        "string"
-      ]
     },
     "created_by": {
       "type": "string",
@@ -61,7 +65,13 @@
     }
   },
   "validations": [],
-  "relations": {},
+  "relations": {
+    "plots": {
+      "type": "hasMany",
+      "model": "plot",
+      "foreignKey": ""
+    }
+  },
   "acls": [
     {
       "accessType": "*",

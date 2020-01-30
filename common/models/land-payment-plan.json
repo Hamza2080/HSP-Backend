@@ -14,10 +14,14 @@
       "type": "string"
     },
     "payment_plan_duration": {
-      "type": "string",
+      "type": "number",
       "required": true,
-      "description": "1 Month or 1 Year, these two formats are acceptable",
-      "default": "1 Year"
+      "default": 1
+    },
+    "is_monthly_plan_type": {
+      "type": "boolean",
+      "required": true,
+      "default": true
     },
     "first_payment": {
       "type": "string",
