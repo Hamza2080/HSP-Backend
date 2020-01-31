@@ -28,22 +28,9 @@
       "type": "number",
       "required": true
     },
-    "downPayment" : {
-      "type": "number",
-      "required": true
-    },
-    "discount":{
-      "type": "number",
-      "required": true
-    },
     "isOnInstallment" : {
       "type": "boolean",
       "required": true
-    },
-    "purchase_date": {
-      "type": "date",
-      "required": true,
-      "defaultFn": "$now"
     },
     "plotFront": {
       "type": "string",
@@ -61,10 +48,10 @@
       "type": "string",
       "required": true
     },
-    "plotPaymentStatus": {
+    "plotStatus": {
       "type": "string",
       "required": true,
-      "default" : "notDone"
+      "default" : "open"
     },
     "installments": {
       "type": [
