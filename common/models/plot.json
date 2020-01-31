@@ -9,9 +9,6 @@
     "installments"
   ],
   "properties": {
-    "name": {
-      "type": "string"
-    },
     "plotNumber": {
       "type": "number",
       "required": true
@@ -19,6 +16,34 @@
     "size": {
       "type": "number",
       "required": true
+    },
+    "measuring_unit": {
+      "type": "string"
+    },
+    "plotType": {
+      "type": "string",
+      "required": true
+    },
+    "totalPayment" : {
+      "type": "number",
+      "required": true
+    },
+    "downPayment" : {
+      "type": "number",
+      "required": true
+    },
+    "discount":{
+      "type": "number",
+      "required": true
+    },
+    "isOnInstallment" : {
+      "type": "boolean",
+      "required": true
+    },
+    "purchase_date": {
+      "type": "date",
+      "required": true,
+      "defaultFn": "$now"
     },
     "plotFront": {
       "type": "string",
@@ -36,29 +61,10 @@
       "type": "string",
       "required": true
     },
-    "purchase_date": {
-      "type": "date",
+    "plotPaymentStatus": {
+      "type": "string",
       "required": true,
-      "defaultFn": "$now"
-    },
-    "measuring_unit": {
-      "type": "string",
-      "required": true
-    },
-    "plotType": {
-      "type": "string",
-      "required": true
-    },
-    "isAmountClear" : {
-      "type": "boolean",
-      "default" : false
-    },
-    "amountReceived" : {
-      "type": "number",
-      "default" : 0
-    },
-    "amountRemaining" : {
-      "type": "number"
+      "default" : "notDone"
     },
     "installments": {
       "type": [
@@ -81,11 +87,6 @@
     "customer": {
       "type": "belongsTo",
       "model": "Customer",
-      "foreignKey": ""
-    },
-    "plotPaymentHistories": {
-      "type": "hasMany",
-      "model": "plot_payment_history",
       "foreignKey": ""
     }
   },

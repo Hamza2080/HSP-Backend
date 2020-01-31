@@ -21,9 +21,31 @@
       "required": true,
       "defaultFn": "$now"
     },
-    "isAmountCleared" : {
+    "totalPayment" : {
+      "type": "number",
+      "required": true
+    },
+    "downPayment" : {
+      "type": "number",
+      "required": true
+    },
+    "discount":{
+      "type": "number",
+      "required": true
+    },
+    "isOnInstallment" : {
       "type": "boolean",
-      "default" : false
+      "required": true
+    },
+    "landPaymentStatus": {
+      "type": "string",
+      "required": true,
+      "default" : "notDone"
+    },
+    "installments": {
+      "type": [
+        "object"
+      ]
     }
   },
   "validations": [],
