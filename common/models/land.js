@@ -32,7 +32,11 @@ module.exports = function (Land) {
         next("Please provide a valid payment plan for creating installment schedule.");
       else if (ctx.instance.totalPayment > ctx.instance.downPayment + ctx.instance.discount && ctx.instance.isOnInstallment)
         createInstallments(ctx.instance, next);
-      else if (ctx.instance.totalPayment == ctx.instance.downPayment + ctx.instance.discount && !ctx.instance.isOnInstallment){ ctx.instance.landPaymentStatus = "Done";ctx.instance.installments = [];next();};
+      else if (ctx.instance.totalPayment == ctx.instance.downPayment + ctx.instance.discount && !ctx.instance.isOnInstallment) {
+        ctx.instance.landPaymentStatus = "Done";
+        ctx.instance.installments = [];
+        next();
+      };
     } else next("Error while creting new instance of Land.");
   });
 
@@ -53,7 +57,7 @@ module.exports = function (Land) {
           let date = new Date(purchaseDate);
           installments.push({
             installmentAmount: remainingAmount,
-            submittedOn: new Date(date.setMonth(date.getMonth() + installmentGap)),
+            submissionDate: new Date(date.setMonth(date.getMonth() + installmentGap)),
             status: "pending"
           })
           instance["installments"] = installments;
@@ -65,7 +69,7 @@ module.exports = function (Land) {
             let amount = remainingAmount >= installmentAmount ? remainingAmount - installmentAmount : remainingAmount;
             installments.push({
               installmentAmount: amount,
-              submittedOn: new Date(date.setMonth(date.getMonth() + (installmentGap * counter))),
+              submissionDate: new Date(date.setMonth(date.getMonth() + (installmentGap * counter))),
               status: "pending"
             })
             remainingAmount -= amount;
@@ -77,6 +81,85 @@ module.exports = function (Land) {
       }
     } catch (error) {
       reject(error);
+    }
+  }
+
+  /**
+   * submit installment api...
+   */
+  Land.remoteMethod('submitInstallment', {
+    accepts: [{
+        arg: 'submittedBy',
+        type: 'string',
+        required: true
+      },
+      {
+        arg: 'submittedTo',
+        type: 'string',
+        required: true
+      },
+      {
+        arg: 'contact',
+        type: 'string',
+        required: true
+      },
+      {
+        arg: 'amount',
+        type: 'number',
+        required: true
+      },
+      {
+        arg: 'landId',
+        type: 'string',
+        required: true
+      }
+    ],
+    returns: {
+      arg: 'data',
+      type: 'object',
+      root: true
+    }
+  });
+  Land.submitInstallment = async function (submittedBy, submittedTo, contact, amount, landId, cb) {
+    try {
+      let landInfo = await Land.findById(landId);
+      if (landInfo.installments.length > 0 && landInfo.landPaymentStatus != "Done") {
+        let length = landInfo.installments.length - 1;
+        if (landInfo.installments[length].status == "pending") {
+          let installments = landInfo.installments[length].installments;
+          let iteration = 0;
+          let pendingInstallment = true;
+          while (iteration <= installments.length && pendingInstallment) {
+            if (installments[iteration].status == "pending") {
+              pendingInstallment = false;
+              if (amount == installments[iteration].installmentAmount) {
+                installments[iteration].status = "done";
+                installments[iteration].submittedOn = new Date();
+                installments[iteration].submittedBy = submittedBy;
+                installments[iteration].submittedTo = submittedTo;
+                installments[iteration].contact = contact;
+                installments[iteration].amount = amount;
+
+                if (landInfo.installments[length].installment[landInfo.installments[length].installment.length - 1].status == "done") {
+                  landInfo.installments[length].status = "done";
+                  landInfo.landPaymentStatus == "Done";
+                } else landInfo.landPaymentStatus == "notDone";
+                landInfo.installments[length].installments = installments;
+
+                await saveInstallmentsInDB(landId, landInfo);
+                cb(null, {
+                  ...landInfo
+                })
+              } else cb(`Installment amount must be equal to ${installments[iteration].installmentAmount}.`)
+            }
+            iteration++;
+          }
+        } else cb(`Land with landId ${landId} installment status is not done, please contact support if you need any help.`)
+      } else {
+        cb(`Land with landId ${landId} payment status is already done, please verify.`)
+      }
+    } catch (err) {
+      cb(err);
     }
   }
 };
