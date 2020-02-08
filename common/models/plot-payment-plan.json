@@ -33,11 +33,6 @@
       "type": "number",
       "required": true
     },
-    "created_by": {
-      "type": "string",
-      "required": true,
-      "default": "admin"
-    },
     "created_at": {
       "type": "date",
       "required": true,
@@ -49,6 +44,11 @@
     "plots": {
       "type": "hasMany",
       "model": "plot",
+      "foreignKey": ""
+    },
+    "created_by_":{
+      "type": "belongsTo",
+      "model": "Customer",
       "foreignKey": ""
     },
     "lands": {

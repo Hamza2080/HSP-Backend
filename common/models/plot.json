@@ -32,22 +32,6 @@
       "type": "boolean",
       "required": true
     },
-    "plotFront": {
-      "type": "string",
-      "required": true
-    },
-    "plotBack": {
-      "type": "string",
-      "required": true
-    },
-    "plotLeft": {
-      "type": "string",
-      "required": true
-    },
-    "plotRight": {
-      "type": "string",
-      "required": true
-    },
     "plotStatus": {
       "type": "string",
       "required": true,
@@ -67,7 +51,7 @@
       "foreignKey": ""
     },
     "plotcategories": {
-      "type": "hasOne",
+      "type": "belongsTo",
       "model": "plotcategory",
       "foreignKey": ""
     },
