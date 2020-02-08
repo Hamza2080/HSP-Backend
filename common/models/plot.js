@@ -24,22 +24,23 @@ module.exports = function (Plot) {
   });
 
   // operation hook before save on plot for checking information....
-  //   Plot.observe("before save", async function (ctx, next) {
-  //     if (ctx.instance) {
-  //       if (ctx.instance.totalPayment < ctx.instance.downPayment + ctx.instance.discount) next("Total payment for plot must be greater then or equal to downPayment + discount.");
-  //       else if (ctx.instance.totalPayment <= ctx.instance.downPayment + ctx.instance.discount && !ctx.instance.isOnInstallment)
-  //         next(`Error while creting new instance of Plot, totalPayment of plot is : ${ctx.instance.totalPayment}, while downPayment is : ${ctx.instance.downPayment} & discount is : ${ctx.instance.discount}, and plot is not available on installment, please verify amount.`);
-  //       else if (ctx.instance.totalPayment > ctx.instance.downPayment + ctx.instance.discount && ctx.instance.isOnInstallment && !ctx.instance.plotPaymentPlanId)
-  //         next("Please provide a valid payment plan for creating installment schedule.");
-  //       else if (ctx.instance.totalPayment > ctx.instance.downPayment + ctx.instance.discount && ctx.instance.isOnInstallment)
-  //         createInstallments(ctx.instance, next);
-  //       else if (ctx.instance.totalPayment == ctx.instance.downPayment + ctx.instance.discount && !ctx.instance.isOnInstallment) {
-  //         ctx.instance.plotPaymentStatus = "Done";
-  //         ctx.instance.installments = [];
-  //         next();
-  //       };
-  //     } else next("Error while creting new instance of Plot.");
-  //   });
+    Plot.observe("before save", async function (ctx, next) {
+      if (ctx.instance) {
+        if (ctx.instance.totalPayment < ctx.instance.downPayment + ctx.instance.discount) next("Total payment for plot must be greater then or equal to downPayment + discount.");
+        else if (ctx.instance.totalPayment <= ctx.instance.downPayment + ctx.instance.discount && !ctx.instance.isOnInstallment)
+          next(`Error while creting new instance of Plot, totalPayment of plot is : ${ctx.instance.totalPayment}, while downPayment is : ${ctx.instance.downPayment} & discount is : ${ctx.instance.discount}, and plot is not available on installment, please verify amount.`);
+        else if (ctx.instance.totalPayment > ctx.instance.downPayment + ctx.instance.discount && ctx.instance.isOnInstallment && !ctx.instance.plotPaymentPlanId)
+          next("Please provide a valid payment plan for creating installment schedule.");
+        // else if (ctx.instance.totalPayment > ctx.instance.downPayment + ctx.instance.discount && ctx.instance.isOnInstallment)
+        //   createInstallments(ctx.instance, next);
+        else if (ctx.instance.totalPayment == ctx.instance.downPayment + ctx.instance.discount && !ctx.instance.isOnInstallment) {
+          ctx.instance.plotPaymentStatus = "Done";
+          ctx.instance.installments = [];
+          next();
+        }
+        else next();
+      } else next("Error while creting new instance of Plot.");
+    });
 
   /**
    * sale plot api...
@@ -90,25 +91,31 @@ module.exports = function (Plot) {
   Plot.salePlot = async function (plotId, purchaseDate, downPayment, discount, purchaserName, soldBy, cb) {
     try {
       let ploInfo = await Plot.findById(plotId);
-      if (ploInfo.plotStatus == "open") {
-        if (ploInfo.totalPayment < downPayment + discount) cb("Total payment for plot must be greater then or equal to downPayment + discount.");
-        else if (ploInfo.totalPayment <= downPayment + discount && !ploInfo.isOnInstallment)
-          cb(`Error while creting new instance of Plot, totalPayment of plot is : ${ploInfo.totalPayment}, while downPayment is : ${downPayment} & discount is : ${discount}, and plot is not available on installment, please verify amount.`);
-        else if (ploInfo.totalPayment > downPayment + discount && ploInfo.isOnInstallment && !ploInfo.plotPaymentPlanId)
-          cb("Please provide a valid payment plan for creating installment schedule.");
-        else if (ploInfo.totalPayment > downPayment + discount && ploInfo.isOnInstallment) {
-          await createInstallments(plotId, ploInfo, purchaseDate, downPayment, discount, purchaserName, soldBy);
-          cb(null, {
-            ...ploInfo
-          })
-        } else if (ploInfo.totalPayment == downPayment + discount && !ploInfo.isOnInstallment) {
-          ploInfo.plotStatus = "sold";
-          await saveInstallmentsInDB(plotId, plotInfo);
-          cb(null, {
-            ...ploInfo
-          })
-        };
-      } else {}
+      // if (plotInfo.isOnInstallment) {
+        if (ploInfo.isOnInstallment){
+          let paymentPlan = await Plot.app.models.plot_payment_plan.findById(plotInfo.plotPaymentPlanId);
+          plotInfo.totalPayment = paymentPlan.totalAmount;
+        }
+        if (ploInfo.plotStatus == "open") {
+          if (ploInfo.totalPayment < downPayment + discount) cb("Total payment for plot must be greater then or equal to downPayment + discount.");
+          else if (ploInfo.totalPayment <= downPayment + discount && !ploInfo.isOnInstallment)
+            cb(`Error while creting new instance of Plot, totalPayment of plot is : ${ploInfo.totalPayment}, while downPayment is : ${downPayment} & discount is : ${discount}, and plot is not available on installment, please verify amount.`);
+          else if (ploInfo.totalPayment > downPayment + discount && ploInfo.isOnInstallment && !ploInfo.plotPaymentPlanId)
+            cb("Please provide a valid payment plan for creating installment schedule.");
+          else if (ploInfo.totalPayment > downPayment + discount && ploInfo.isOnInstallment) {
+            await createInstallments(plotId, ploInfo, purchaseDate, downPayment, discount, purchaserName, soldBy);
+            cb(null, {
+              ...ploInfo
+            })
+          } else if (ploInfo.totalPayment == downPayment + discount && !ploInfo.isOnInstallment) {
+            ploInfo.plotStatus = "sold";
+            await saveInstallmentsInDB(plotId, plotInfo);
+            cb(null, {
+              ...ploInfo
+            })
+          };
+        } else cb(`Plot with id ${plotId} status is not open for sale.`);
+      // } else cb(`Plot with id ${plotId} is not available on installment.`);
     } catch (err) {
       cb(err);
     }
