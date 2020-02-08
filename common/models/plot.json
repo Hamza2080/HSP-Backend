@@ -20,10 +20,6 @@
     "measuring_unit": {
       "type": "string"
     },
-    "plotType": {
-      "type": "string",
-      "required": true
-    },
     "totalPayment" : {
       "type": "number",
       "required": true
