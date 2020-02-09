@@ -5,23 +5,6 @@ module.exports = function (Land) {
   //validity of name field...
   Land.validatesUniquenessOf('name');
 
-  // add landlord and land measurement detail while getting land
-  Land.afterRemote('**', async function (ctx, modelInstance, next) {
-    let methodName = ctx.method.name;
-    if ((methodName == "find" || methodName == "findOne" || methodName == "findById") && modelInstance && modelInstance.length > 0) {
-      await Promise.all(modelInstance.map(async instance => {
-        let landlord = await Land.app.models.landlord.findById(instance.landlordId);
-        let landMeasurement = await Land.app.models.land_measuring_unit.findById(instance.landMeasuringUnitId);
-        // instance["landlord"] = landlord;
-        instance["landMeasurement"] = landMeasurement;
-        instance["measuring_unit"] = landMeasurement.measuring_unit;
-        instance["landLord"] = landlord;
-      }))
-      next();
-    } else next();
-  });
-
-
   // operation hook before save on land for checking information....
   Land.observe("before save", async function (ctx, next) {
     if (ctx.instance && ctx.isNewInstance) {
@@ -35,10 +18,80 @@ module.exports = function (Land) {
       else if (ctx.instance.totalPayment == ctx.instance.downPayment + ctx.instance.discount && !ctx.instance.isOnInstallment) {
         ctx.instance.landPaymentStatus = "Done";
         ctx.instance.installments = [];
+        putLandInfoWhileCreate(ctx.instance, next);
         next();
       };
     } else next("Error while creting new instance of Land.");
   });
+
+  function putLandInfoWhileCreate(instance, next) {      
+    Promise.all([
+      getLandMeasuringData(instance.landMeasuringUnitId),
+      getLandLordById(instance.landlordId),
+      getPaymentPlan(instance),
+      getPlotCategoryById(instance.plotcategoriesId)
+    ]).then(result => {
+      let landMeasuringData = result[0];
+      let landlordData = result[1];
+      let plotPaymentPlanData = result[2] || instance["plotPaymentPlanId"];
+      if (ctx.instance.totalPayment == ctx.instance.downPayment + ctx.instance.discount && !ctx.instance.isOnInstallment)
+        instance.plotPaymentStatus = "Done";
+      instance.installments = [];
+      if (landMeasuringData) instance["measuring_unitData"] = landMeasuringData;
+      if (landlordData) instance["landlordData"] = landlordData;
+      if (plotPaymentPlanData) instance["plotPaymentPlanData"] = plotPaymentPlanData;
+      console.log(instance)
+      // next();
+    })
+  }
+
+  function getLandLordById(landlordId) {
+    return new Promise((resolve, reject) => {
+      Plot.app.models.landlord.findById(landlordId, function (error, data) {
+        if (error) reject(error);
+        else {
+          resolve(data)
+        }
+      })
+    })
+  }
+
+  function getPlotCategoryById(plotcategoryId) {
+    return new Promise((resolve, reject) => {
+      if (plotcategoryId) {
+        Plot.app.models.plotcategory.findById(plotcategoryId, function (error, data) {
+          if (error) reject(error);
+          else {
+            resolve(data)
+          }
+        })
+      } else resolve()
+    })
+  }
+
+  function getPaymentPlan(instance) {
+    return new Promise((resolve, reject) => {
+      if (instance.plotPaymentPlanId && instance.isOnInstallment) {
+        Plot.app.models.plot_payment_plan.findById(instance.plotPaymentPlanId, function (error, data) {
+          if (error) reject(error);
+          else {
+            resolve(data)
+          }
+        })
+      } else resolve();
+    })
+  }
+
+  function getLandMeasuringData(landMeasuringId) {
+    return new Promise((resolve, reject) => {
+      Plot.app.models.land_measuring_unit.findById(landMeasuringId, function (error, data) {
+        if (error) reject(error);
+        else {
+          resolve(data)
+        }
+      })
+    })
+  }
 
   //create installments against payment plan...
   async function createInstallments(instance, next) {
@@ -52,7 +105,6 @@ module.exports = function (Land) {
         let installmentGap = paymentPlan.installmentGap;
         let purchaseDate = instance.purchaseDate;
         let installments = [];
-
         if (remainingAmount <= installmentAmount) {
           let date = new Date(purchaseDate);
           installments.push({
@@ -61,8 +113,9 @@ module.exports = function (Land) {
             status: "pending"
           })
           instance["installments"] = installments;
-          next();
+          putLandInfoWhileCreate(instance, next);
         } else {
+          conosle.log("inside")
           let counter = 1;
           while (remainingAmount > 0) {
             let date = new Date(purchaseDate);
@@ -76,11 +129,12 @@ module.exports = function (Land) {
             counter += 1;
           }
           instance["installments"] = installments;
-          next();
+          putLandInfoWhileCreate(instance, next);
         }
       }
     } catch (error) {
-      reject(error);
+      console.log(error)
+      next(error);
     }
   }
 

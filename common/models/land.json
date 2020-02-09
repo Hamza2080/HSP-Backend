@@ -25,14 +25,6 @@
       "type": "number",
       "required": true
     },
-    "downPayment" : {
-      "type": "number",
-      "required": true
-    },
-    "discount":{
-      "type": "number",
-      "required": true
-    },
     "isOnInstallment" : {
       "type": "boolean",
       "required": true
@@ -71,7 +63,7 @@
       "accessType": "*",
       "principalType": "ROLE",
       "principalId": "$everyone",
-      "permission": "DENY",
+      "permission": "ALLOW",
       "property": "*"
     },
     {
