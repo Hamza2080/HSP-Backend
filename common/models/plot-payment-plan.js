@@ -17,6 +17,7 @@ module.exports = function (Plotpaymentplan) {
         let no_of_installment = Math.ceil(remainingAmount/installmentAmount);
 
         ctx.instance["no_of_installment"] = no_of_installment;
+        
         next();
       }
     }

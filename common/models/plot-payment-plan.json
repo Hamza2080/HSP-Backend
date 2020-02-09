@@ -22,9 +22,6 @@
       "type": "number",
       "required": true
     },
-    "noOfInstallment": {
-      "type": "number"
-    },
     "totalAmount": {
       "type": "number",
       "required": true
