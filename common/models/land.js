@@ -200,13 +200,9 @@ module.exports = function (Land) {
           cb(`Payment for installment not added successfully, please contact support.`);
         }
       } else {
-        console.log("inside")
         throw(`Land with landId ${landId} payment status is already done, please verify.`)
       }
     } catch (err) {
-      console.log("here inside")
-
-      console.log(err)
       cb(err);
     }
   }

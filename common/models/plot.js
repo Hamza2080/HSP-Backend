@@ -116,17 +116,17 @@ module.exports = function (Plot) {
   }
 
   // save plot info after creating installment array...
-  function saveInstallmentsInDB(plotId, plotInfo) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        await Plot.replaceById(plotId, plotInfo, {
-          validate: true
-        });
-      } catch (err) {
-        reject(err);
-      }
-    })
-  }
+  // function saveInstallmentsInDB(plotId, plotInfo) {
+  //   return new Promise(async (resolve, reject) => {
+  //     try {
+  //       await Plot.replaceById(plotId, plotInfo, {
+  //         validate: true
+  //       });
+  //     } catch (err) {
+  //       reject(err);
+  //     }
+  //   })
+  // }
 
 
   /**
@@ -134,30 +134,25 @@ module.exports = function (Plot) {
    */
   Plot.remoteMethod('submitInstallment', {
     accepts: [{
-        arg: 'submittedBy',
-        type: 'string',
-        required: true
-      },
-      {
-        arg: 'submittedTo',
-        type: 'string',
-        required: true
-      },
-      {
-        arg: 'contact',
-        type: 'string',
-        required: true
-      },
-      {
-        arg: 'amount',
-        type: 'number',
-        required: true
-      },
-      {
-        arg: 'plotId',
-        type: 'string',
-        required: true
-      }
+      arg: 'submittedBy',
+      type: 'string',
+      required: true
+    },
+    {
+      arg: 'submittedTo',
+      type: 'string',
+      required: true
+    },
+    {
+      arg: 'contact',
+      type: 'string',
+      required: true
+    },
+    {
+      arg: 'plotId',
+      type: 'string',
+      required: true
+    }
     ],
     returns: {
       arg: 'data',
@@ -165,43 +160,37 @@ module.exports = function (Plot) {
       root: true
     }
   });
-  Plot.submitInstallment = async function (submittedBy, submittedTo, contact, amount, plotId, cb) {
+  Plot.submitInstallment = async function (submittedBy, submittedTo, contact, plotId, cb) {
     try {
       let plotInfo = await Plot.findById(plotId);
-      if (plotInfo.installments.length > 0 && plotInfo.plotStatus == "sold") {
-        let length = plotInfo.installments.length - 1;
-        if (plotInfo.installments[length].status == "pending") {
-          let installments = plotInfo.installments[length].installments;
-          let iteration = 0;
-          let pendingInstallment = true;
-          while (iteration <= installments.length && pendingInstallment) {
-            if (installments[iteration].status == "pending") {
-              pendingInstallment = false;
-              if (amount == installments[iteration].installmentAmount) {
-                installments[iteration].status = "done";
-                installments[iteration].submittedOn = new Date();
-                installments[iteration].submittedBy = submittedBy;
-                installments[iteration].submittedTo = submittedTo;
-                installments[iteration].contact = contact;
-                installments[iteration].amount = amount;
+      if (plotInfo && plotInfo.installments.length > 0 && plotInfo.landPaymentStatus != "sold") {
+        let plotPaymentPlan = plotInfo.plotPaymentPlanData;
+        let allInstallments = plotInfo.installments;
 
-                if (plotInfo.installments[length].installment[plotInfo.installments[length].installment.length - 1].status == "done") {
-                  plotInfo.installments[length].status = "done";
-                  plotInfo.plotStatus == "sold";
-                }
-                plotInfo.installments[length].installments = installments;
-
-                await saveInstallmentsInDB(plotId, plotInfo);
-                cb(null, {
-                  ...plotInfo
-                })
-              } else cb(`Installment amount must be equal to ${installments[iteration].installmentAmount}.`)
-            }
-            iteration++;
+        let isSubmitted = false;
+        for (let i=0; i< plotPaymentPlan.no_of_installment; i++) {
+          if (allInstallments[i].status == "pending" && !isSubmitted) {
+            isSubmitted = true;
+            plotInfo.installments[i].status = "done";
+            plotInfo.installments[i].submittedOn = new Date();
+            plotInfo.installments[i].submittedBy = submittedBy;
+            plotInfo.installments[i].submittedTo = submittedTo;
+            plotInfo.installments[i].contact = contact;
           }
-        } else cb(`Plot with plotId ${plotId} installment status is not done, please contact support if you need any help.`)
+        }
+        if (allInstallments[allInstallments.length - 1].status == "done") {
+          plotInfo.landPaymentStatus = "sold";
+        }
+        let isUpsertSuccess = await Plot.upsert(plotInfo);
+        if (isSubmitted && isUpsertSuccess)
+          cb(null, {
+            ...plotInfo
+          })
+        else {
+          cb(`Payment for installment not added successfully, please contact support.`);
+        }
       } else {
-        cb(`Plot with plotId ${plotId} status is not sold, please verify.`)
+        throw(`Plot with plotId ${landId} payment status is already done, please verify.`)
       }
     } catch (err) {
       cb(err);
