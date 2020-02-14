@@ -5,17 +5,20 @@ module.exports = function (Plot) {
   Plot.validatesUniquenessOf("plotNumber");
 
   // operation hook before save on plot for checking information....
-  Plot.observe("before save", function (ctx, next) {
-    if (ctx.instance) {
-      if (ctx.instance.totalPayment < ctx.instance.downPayment + ctx.instance.discount) next("Total payment for plot must be greater then or equal to downPayment + discount.");
-      else if (ctx.instance.totalPayment <= ctx.instance.downPayment + ctx.instance.discount && !ctx.instance.isOnInstallment)
-        next(`Error while creting new instance of Plot, totalPayment of plot is : ${ctx.instance.totalPayment}, while downPayment is : ${ctx.instance.downPayment} & discount is : ${ctx.instance.discount}, and plot is not available on installment, please verify amount.`);
-      else if (ctx.instance.totalPayment > ctx.instance.downPayment + ctx.instance.discount && ctx.instance.isOnInstallment && !ctx.instance.plotPaymentPlanId)
-        next("Please provide a valid payment plan for creating installment schedule.");
-      // else if (ctx.instance.totalPayment > ctx.instance.downPayment + ctx.instance.discount && ctx.instance.isOnInstallment)
-      //   createInstallments(ctx.instance, next);
-      else putPlotInfoWhileCreate(ctx.instance, next);
-    } else next("Error while creting new instance of Plot.");
+   // operation hook before save on land for checking information....
+   Plot.observe("before save", async function (ctx, next) {
+    try {
+      if (ctx.isNewInstance) {
+        let instance = ctx.instance;
+        instance.installments = [];
+        await putPlotInfoWhileCreate(instance);
+        next();
+      } else if (ctx.data && ctx.data.installments.length > 0){
+        next();
+      }else throw ("updating plot instance is prohibited, please contact support.");
+    } catch (error) {
+      next(error)
+    }
   });
 
   /**
@@ -28,28 +31,8 @@ module.exports = function (Plot) {
         required: true
       },
       {
-        arg: 'purchaseDate',
-        type: 'date',
-        required: true
-      },
-      {
-        arg: 'downPayment',
-        type: 'number',
-        required: true
-      },
-      {
-        arg: 'discount',
-        type: 'number',
-        required: true
-      },
-      {
-        arg: 'purchaserName',
+        arg: 'customerId',
         type: 'string',
-        required: true
-      },
-      {
-        arg: 'soldBy',
-        type: 'number',
         required: true
       }
     ],
@@ -64,90 +47,67 @@ module.exports = function (Plot) {
       root: true
     }
   });
-  Plot.salePlot = async function (plotId, purchaseDate, downPayment, discount, purchaserName, soldBy, cb) {
+
+  Plot.salePlot = async function (plotId, customerId, cb) {
     try {
       let ploInfo = await Plot.findById(plotId);
-      // if (plotInfo.isOnInstallment) {
-      if (ploInfo.isOnInstallment) {
-        let paymentPlan = await Plot.app.models.plot_payment_plan.findById(plotInfo.plotPaymentPlanId);
-        plotInfo.totalPayment = paymentPlan.totalAmount;
-      }
-      if (ploInfo.plotStatus == "open") {
-        if (ploInfo.totalPayment < downPayment + discount) cb("Total payment for plot must be greater then or equal to downPayment + discount.");
-        else if (ploInfo.totalPayment <= downPayment + discount && !ploInfo.isOnInstallment)
-          cb(`Error while creting new instance of Plot, totalPayment of plot is : ${ploInfo.totalPayment}, while downPayment is : ${downPayment} & discount is : ${discount}, and plot is not available on installment, please verify amount.`);
-        else if (ploInfo.totalPayment > downPayment + discount && ploInfo.isOnInstallment && !ploInfo.plotPaymentPlanId)
-          cb("Please provide a valid payment plan for creating installment schedule.");
-        else if (ploInfo.totalPayment > downPayment + discount && ploInfo.isOnInstallment) {
-          await createInstallments(plotId, ploInfo, purchaseDate, downPayment, discount, purchaserName, soldBy);
-          cb(null, {
-            ...ploInfo
-          })
-        } else if (ploInfo.totalPayment == downPayment + discount && !ploInfo.isOnInstallment) {
+      if (ploInfo){
+        if (ploInfo.isOnInstallment && ploInfo.plotStatus == 'open') {
+          let instance = await createInstallments(plotId, ploInfo, customerId, cb);
+          cb(null, {...instance});
+        } else if (ploInfo.plotStatus == 'open' && !ploInfo.isOnInstallment){
           ploInfo.plotStatus = "sold";
-          await saveInstallmentsInDB(plotId, plotInfo);
-          cb(null, {
-            ...ploInfo
-          })
-        };
-      } else cb(`Plot with id ${plotId} status is not open for sale.`);
-      // } else cb(`Plot with id ${plotId} is not available on installment.`);
+          plotInfo.customerId = customerId;
+          plotInfo["customerData"] = await Plot.app.models.Customer.findById(customerId) || {};
+          ploInfo.installments = [];
+          let isUpsertSuccess = await Plot.upsert(ploInfo);
+          if (isUpsertSuccess)
+            cb(null, {
+              ...landInfo
+            })
+          else throw(`error while sale plot, update in database.`);
+        } else throw(`Plot status is not open.`);
+      } else cb(`Plot with id ${plotId} not found.`);
     } catch (err) {
       cb(err);
     }
   }
 
   //create installments against payment plan...
-  function createInstallments(plotId, plotInfo, purchaseDate, downPayment, discount, purchaserName) {
+  function createInstallments(plotId, instance, customerId, cb) {
     return new Promise(async (resolve, reject) => {
       try {
-        let paymentPlan = await Plot.app.models.plot_payment_plan.findById(plotInfo.plotPaymentPlanId);
-        if (!paymentPlan) reject(`Please provide a valid plotPaymentPlan Id, ${plotInfo.plotPaymentPlanId} is not a valid paymentPlan Id.`);
+        let paymentPlan = await Plot.app.models.plot_payment_plan.findById(instance.plotPaymentPlanId);
+        if (!paymentPlan) reject(`Please provide a valid plotPaymentPlan Id, ${instance.plotPaymentPlanId} is not a valid paymentPlan Id.`);
         else {
-          let totalInstallments = paymentPlan.noOfInstallment;
-          let remainingAmount = plotInfo.totalPayment - downPayment - discount;
+          let totalInstallments = paymentPlan.no_of_installment;
+          let discount = instance.discount || 0;
+          let remainingAmount = paymentPlan.totalAmount - paymentPlan.downPayment - discount;
           let installmentAmount = paymentPlan.installmentAmount;
           let installmentGap = paymentPlan.installmentGap;
-          let installment = plotInfo.installments || [];
-
-          installment.push({
-            purchaseDate: purchaseDate,
-            discount: discount,
-            downPayment: downPayment,
-            purchaserName: purchaserName,
-            remainingAmount: remainingAmount,
-            status: "pending",
-            installments: []
-          });
-
-          if (remainingAmount <= installmentAmount) {
+          let purchaseDate = new Date();
+          let installments = [];
+          for (let i = 0; i < totalInstallments; i++) {
             let date = new Date(purchaseDate);
-            installment.installments.push({
-              installmentAmount: remainingAmount,
-              submissionDate: new Date(date.setMonth(date.getMonth() + installmentGap)),
+            let amount = remainingAmount >= installmentAmount ? installmentAmount : remainingAmount;
+            installments.push({
+              installmentAmount: amount,
+              submissionDate: new Date(date.setMonth(date.getMonth() + (installmentGap * i))),
               status: "pending"
             })
-
-            plotInfo.installments = installment;
-            ploInfo.plotStatus = "sold";
-            resolve(await saveInstallmentsInDB(plotId, plotInfo));
-          } else {
-            let counter = 1;
-            while (remainingAmount > 0) {
-              let date = new Date(purchaseDate);
-              let amount = remainingAmount >= installmentAmount ? remainingAmount - installmentAmount : remainingAmount;
-              installment.installments.push({
-                installmentAmount: amount,
-                submissionDate: new Date(date.setMonth(date.getMonth() + (installmentGap * counter))),
-                status: "pending"
-              })
-              remainingAmount -= amount;
-              counter += 1;
-            }
-            plotInfo.installments = installment;
-            ploInfo.plotStatus = "sold";
-            resolve(await tsaveInstallmentsInDB(plotId, plotInfo));
           }
+          instance["installments"] = installments;
+          instance["totalPayment"] = paymentPlan.total_amount;
+          instance["downPayment"] = paymentPlan.downPayment;
+          instance["plotStatus"] = "onInstallment";
+          instance["customerData"] = await Plot.app.models.Customer.findById(customerId);
+          // instance["meauringUnitData"] = await Plot.app.models.land_measuring_unit.findById(instance.landMeasuringUnitId);
+          // instance["landlordData"] = await Plot.app.models.landlord.findById(instance.landlordId);
+          // instance["paymentPlanData"] = await Plot.app.models.plot_payment_plan.findById(instance.plotPaymentPlanId);
+
+          let isUpserTrue = await Plot.upsert(instance);
+          if (isUpserTrue) resolve(instance)
+          else  reject(`Plot installments not created, please contact support.`)
         }
       } catch (error) {
         reject(error);
@@ -248,26 +208,32 @@ module.exports = function (Plot) {
     }
   }
 
-  function putPlotInfoWhileCreate(instance, next) {      
-    Promise.all([
-      getLandMeasuringData(instance.landMeasuringUnitId),
-      getCustomerById(instance.customerId),
-      getPaymentPlan(instance),
-      getPlotCategoryById(instance.plotcategoriesId)
-    ]).then(result => {
-      let landMeasuringData = result[0];
-      let customerData = result[1];
-      let plotPaymentPlanData = result[2] || instance["plotPaymentPlanId"];
-      let plotcategoriesData = result[3];
-      if (ctx.instance.totalPayment == ctx.instance.downPayment + ctx.instance.discount && !ctx.instance.isOnInstallment)
-        instance.plotPaymentStatus = "Done";
-      instance.installments = [];
-      if (landMeasuringData) instance["measuring_unitData"] = landMeasuringData;
-      if (customerData) instance["customerData"] = customerData;
-      if (plotPaymentPlanData) instance["plotPaymentPlanData"] = plotPaymentPlanData;
-      if (plotcategoriesData) instance["plotcategoriesData"] = plotcategoriesData;
-      next();
-    })
+  function putPlotInfoWhileCreate(instance) {   
+    return new Promise(async (resolve, reject) => {
+      try {
+        Promise.all([
+          getLandMeasuringData(instance.landMeasuringUnitId),
+          getCustomerById(instance.customerId),
+          getPaymentPlan(instance),
+          getPlotCategoryById(instance.plotcategoriesId)
+        ]).then(result => {
+          let landMeasuringData = result[0];
+          let customerData = result[1];
+          let plotPaymentPlanData = result[2] || instance["plotPaymentPlanId"];
+          let plotcategoriesData = result[3];
+          if (instance.totalPayment == instance.downPayment + instance.discount && !instance.isOnInstallment)
+            instance.plotPaymentStatus = "Done";
+          instance.installments = [];
+          if (landMeasuringData) instance["measuring_unitData"] = landMeasuringData;
+          if (customerData) instance["customerData"] = customerData;
+          if (plotPaymentPlanData) instance["plotPaymentPlanData"] = plotPaymentPlanData;
+          if (plotcategoriesData) instance["plotcategoriesData"] = plotcategoriesData;
+          resolve();
+        })
+      } catch(error) {
+        reject(error);
+      }
+    })   
   }
 
   function getPlotCategoryById(plotcategoryId) {

@@ -14,7 +14,7 @@ module.exports = function (Land) {
           await createInstallments(instance, next);
           next();
         } else if (instance.totalPayment < instance.downPayment + instance.discount) throw ("Total payment for land must be greater then or equal to downPayment + discount.");
-        else if (instance.totalPayment > instance.downPayment + instance.discount) throw (`Total payment is greater then downPayment + discount, please submit whole payment or book plot on installment.`);
+        else if (instance.totalPayment > instance.downPayment + instance.discount) throw (`Total payment is greater then downPayment + discount, please submit whole payment or book land on installment.`);
         else if (instance.totalPayment == instance.downPayment + instance.discount && !instance.isOnInstallment) {
           instance.landPaymentStatus = "Done";
           instance.installments = [];
@@ -175,7 +175,6 @@ module.exports = function (Land) {
       let landInfo = await Land.findById(landId);
       if (landInfo && landInfo.installments.length > 0 && landInfo.landPaymentStatus != "Done") {
         let landPaymentPlan = landInfo.paymentPlanData;
-        let installmentAmount = landPaymentPlan.installmentAmount;
         let allInstallments = landInfo.installments;
 
         let isSubmitted = false;
@@ -192,10 +191,14 @@ module.exports = function (Land) {
         if (allInstallments[allInstallments.length - 1].status == "done") {
           landInfo.landPaymentStatus = "Done";
         }
-        await Land.upsert(landInfo);
-        cb(null, {
-          ...landInfo
-        })
+        let isUpsertSuccess = await Land.upsert(landInfo);
+        if (isSubmitted && isUpsertSuccess)
+          cb(null, {
+            ...landInfo
+          })
+        else {
+          cb(`Payment for installment not added successfully, please contact support.`);
+        }
       } else {
         console.log("inside")
         throw(`Land with landId ${landId} payment status is already done, please verify.`)
@@ -206,18 +209,5 @@ module.exports = function (Land) {
       console.log(err)
       cb(err);
     }
-  }
-
-  // save land info after creating installment array...
-  function saveInstallmentsInDB(landId, landInfo) {
-    return new Promise(async (resolve, reject) => {
-      
-      try {
-console.log()
-        resolve(await Land.upsert(landInfo));
-      } catch (err) {
-        reject(err);
-      }
-    })
   }
 };
