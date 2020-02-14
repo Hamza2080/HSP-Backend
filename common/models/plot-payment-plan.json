@@ -18,7 +18,7 @@
       "type": "number",
       "required": true
     },
-    "installmentGap":{
+    "installmentGap": {
       "type": "number",
       "required": true
     },
@@ -43,7 +43,7 @@
       "model": "plot",
       "foreignKey": ""
     },
-    "created_by_":{
+    "created_by_": {
       "type": "belongsTo",
       "model": "Customer",
       "foreignKey": ""

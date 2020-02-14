@@ -21,18 +21,18 @@
       "required": true,
       "defaultFn": "$now"
     },
-    "totalPayment" : {
+    "totalPayment": {
       "type": "number",
       "required": true
     },
-    "isOnInstallment" : {
+    "isOnInstallment": {
       "type": "boolean",
       "required": true
     },
     "landPaymentStatus": {
       "type": "string",
       "required": true,
-      "default" : "notDone"
+      "default": "notDone"
     },
     "installments": {
       "type": [

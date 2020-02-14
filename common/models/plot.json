@@ -17,18 +17,18 @@
     "measuring_unit": {
       "type": "string"
     },
-    "totalPayment" : {
+    "totalPayment": {
       "type": "number",
       "required": true
     },
-    "isOnInstallment" : {
+    "isOnInstallment": {
       "type": "boolean",
       "required": true
     },
     "plotStatus": {
       "type": "string",
       "required": true,
-      "default" : "open"
+      "default": "open"
     },
     "installments": {
       "type": [

@@ -95,5 +95,9 @@
   "installment": {
     "dataSource": "mongoDB",
     "public": true
+  },
+  "expense": {
+    "dataSource": "mongoDB",
+    "public": true
   }
 }
