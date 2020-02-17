@@ -53,7 +53,7 @@ module.exports = function (Plot) {
       let ploInfo = await Plot.findById(plotId);
       if (ploInfo){
         if (ploInfo.isOnInstallment && ploInfo.plotStatus == 'open') {
-          let instance = await createInstallments(plotId, ploInfo, customerId, cb);
+          let instance = await createInstallments(plotId, ploInfo, customerId);
           cb(null, {...instance});
         } else if (ploInfo.plotStatus == 'open' && !ploInfo.isOnInstallment){
           ploInfo.plotStatus = "sold";
@@ -74,7 +74,7 @@ module.exports = function (Plot) {
   }
 
   //create installments against payment plan...
-  function createInstallments(plotId, instance, customerId, cb) {
+  function createInstallments(plotId, instance, customerId) {
     return new Promise(async (resolve, reject) => {
       try {
         let paymentPlan = await Plot.app.models.plot_payment_plan.findById(instance.plotPaymentPlanId);
