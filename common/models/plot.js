@@ -78,8 +78,11 @@ module.exports = function (Plot) {
     return new Promise(async (resolve, reject) => {
       try {
         let paymentPlan = await Plot.app.models.plot_payment_plan.findById(instance.plotPaymentPlanId);
-        if (!paymentPlan) reject(`Please provide a valid plotPaymentPlan Id, ${instance.plotPaymentPlanId} is not a valid paymentPlan Id.`);
-        else {
+        if (!paymentPlan) {
+          var error = new Error(`Please provide a valid plotPaymentPlan Id, ${instance.plotPaymentPlanId} is not a valid paymentPlan Id.`);
+          error.status = 400;
+          reject(error);
+      } else {
           let totalInstallments = paymentPlan.no_of_installment;
           let discount = instance.discount || 0;
           let remainingAmount = paymentPlan.totalAmount - paymentPlan.downPayment - discount;
@@ -107,9 +110,15 @@ module.exports = function (Plot) {
 
           let isUpserTrue = await Plot.upsert(instance);
           if (isUpserTrue) resolve(instance)
-          else  reject(`Plot installments not created, please contact support.`)
+          else  {
+            var error = new Error(`Plot installments not created, please contact support.`);
+            error.status = 400;
+            reject(error);
+        }
         }
       } catch (error) {
+        var error = new Error(error);
+        error.status = 400;
         reject(error);
       }
     })
