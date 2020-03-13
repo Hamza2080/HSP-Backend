@@ -6,6 +6,7 @@ module.exports = function(server) {
   router.get('/', server.loopback.status());
   router.get('/paypal_test', (req, res) => {
     console.log("paypal_test route hit successfully.");
+    console.log(req)
     console.log(req.query);
     res.send("Hello");
   });
