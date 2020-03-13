@@ -8,7 +8,7 @@ module.exports = function(server) {
     console.log("paypal_test route hit successfully.");
     console.log(req)
     console.log(req.query);
-    res.send("Hello");
+    res.redirect("https://www.google.com/");
   });
   server.use(router);
 };
