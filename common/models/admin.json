@@ -24,6 +24,20 @@
     {
       "accessType": "*",
       "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "DENY",
+      "property": "create"
+    },
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "admin",
+      "permission": "ALLOW",
+      "property": "create"
+    },
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
       "principalId": "admin",
       "permission": "ALLOW",
       "property": "getAllUsers"

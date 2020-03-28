@@ -6,20 +6,17 @@
     "validateUpsert": true
   },
   "properties": {
-    "name": {
-      "type": "string"
+    "Description": {
+      "type": "string",
+      "required" : "true"
     },
-    "total_land": {
+    "totalLand": {
       "type": "number",
       "required": true
     },
-    "measuring_unit": {
-      "type": "string"
-    },
-    "acquired_date": {
-      "type": "date",
-      "required": true,
-      "defaultFn": "$now"
+    "measuringUnit": {
+      "type": "string",
+      "required": true
     },
     "totalPayment": {
       "type": "number",
@@ -32,7 +29,10 @@
     "landPaymentStatus": {
       "type": "string",
       "required": true,
-      "default": "notDone"
+      "default": "NotStarted"
+    },
+    "additionalNotes": {
+      "type": "string"
     },
     "installments": {
       "type": [

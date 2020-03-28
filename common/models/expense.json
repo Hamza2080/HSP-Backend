@@ -6,7 +6,11 @@
     "validateUpsert": true
   },
   "properties": {
-    "expense_type": {
+    "expenseName" : {
+      "type": "string",
+      "required": true
+    },
+    "expenseType": {
       "type": "string",
       "required": true
     },
@@ -14,14 +18,28 @@
       "type": "number",
       "required": true
     },
-    "date": {
+    "expenseDate": {
       "type": "date",
       "required": true
     },
     "status": {
       "type": "string",
       "required": true,
-      "default": "not_paid"
+      "default": "Paid",
+      "example" : "Paid | Due"
+    },
+    "paidBy": {
+      "type": "string",
+      "required": true
+    },
+    "attachment": {
+      "type":[
+        "string"
+      ],
+      "required": true
+    },
+    "additionalNotes": {
+      "type": "string"
     }
   },
   "validations": [],

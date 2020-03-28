@@ -44,10 +44,6 @@
     "dataSource": "mongoDB",
     "public": true
   },
-  "land_payment_plan": {
-    "dataSource": "mongoDB",
-    "public": false
-  },
   "landlord": {
     "dataSource": "mongoDB",
     "public": true
