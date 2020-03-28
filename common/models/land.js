@@ -3,7 +3,7 @@
 module.exports = function (Land) {
 
   // //validity of name field...
-  // Land.validatesUniquenessOf('name');
+  Land.validatesUniquenessOf('name');
 
   // // operation hook before save on land for checking information....
   // Land.observe("before save", async function (ctx, next) {

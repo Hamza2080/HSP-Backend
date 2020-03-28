@@ -47,11 +47,6 @@
       "type": "belongsTo",
       "model": "Customer",
       "foreignKey": ""
-    },
-    "lands": {
-      "type": "hasMany",
-      "model": "land",
-      "foreignKey": ""
     }
   },
   "acls": [

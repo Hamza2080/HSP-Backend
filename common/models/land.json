@@ -6,7 +6,7 @@
     "validateUpsert": true
   },
   "properties": {
-    "Description": {
+    "description": {
       "type": "string",
       "required" : "true"
     },
@@ -18,9 +18,26 @@
       "type": "string",
       "required": true
     },
+    "acquired_date": {
+      "type": "date",
+      "defaultFn": "$now"
+    },
+    "installmentStartDate": {
+      "type": "date"
+    },
+    "installmentGap": {
+      "type": "string"
+    },
     "totalPayment": {
       "type": "number",
       "required": true
+    },
+    "downPayment": {
+      "type": "number",
+      "required": true
+    },
+    "noOfInstallment": {
+      "type": "number"
     },
     "isOnInstallment": {
       "type": "boolean",
