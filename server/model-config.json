@@ -95,5 +95,9 @@
   "expense": {
     "dataSource": "mongoDB",
     "public": true
+  },
+  "attachment": {
+    "dataSource": "myFile",
+    "public": true
   }
 }

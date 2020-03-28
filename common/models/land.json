@@ -8,7 +8,7 @@
   "properties": {
     "description": {
       "type": "string",
-      "required" : "true"
+      "required": "true"
     },
     "totalLand": {
       "type": "number",

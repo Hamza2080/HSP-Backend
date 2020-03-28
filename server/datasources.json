@@ -11,5 +11,12 @@
     "useCreateIndex": true,
     "useUnifiedTopology": true,
     "connector": "mongodb"
+  },
+  "myFile": {
+    "name": "myFile",
+    "connector": "loopback-component-storage",
+    "provider": "filesystem",
+    "root": "storage",
+    "maxFileSize": "10485760"
   }
 }
