@@ -1,5 +1,4 @@
 'use strict';
 
-module.exports = function(Attachment) {
-
+module.exports = function(Attachment) {;
 };
