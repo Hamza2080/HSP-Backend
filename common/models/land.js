@@ -139,71 +139,66 @@ module.exports = function (Land) {
   //   })
   // }
 
-  // /**
-  //  * submit installment api...
-  //  */
-  // Land.remoteMethod('submitInstallment', {
-  //   accepts: [{
-  //       arg: 'submittedBy',
-  //       type: 'string',
-  //       required: true
-  //     },
-  //     {
-  //       arg: 'submittedTo',
-  //       type: 'string',
-  //       required: true
-  //     },
-  //     {
-  //       arg: 'contact',
-  //       type: 'string',
-  //       required: true
-  //     },
-  //     {
-  //       arg: 'landId',
-  //       type: 'string',
-  //       required: true
-  //     }
-  //   ],
-  //   returns: {
-  //     arg: 'data',
-  //     type: 'object',
-  //     root: true
-  //   }
-  // });
-  // Land.submitInstallment = async function (submittedBy, submittedTo, contact, landId, cb) {
-  //   try {
-  //     let landInfo = await Land.findById(landId);
-  //     if (landInfo && landInfo.installments.length > 0 && landInfo.landPaymentStatus != "Done") {
-  //       let landPaymentPlan = landInfo.paymentPlanData;
-  //       let allInstallments = landInfo.installments;
-
-  //       let isSubmitted = false;
-  //       for (let i=0; i< landPaymentPlan.no_of_installment; i++) {
-  //         if (allInstallments[i].status == "pending" && !isSubmitted) {
-  //           isSubmitted = true;
-  //           landInfo.installments[i].status = "done";
-  //           landInfo.installments[i].submittedOn = new Date();
-  //           landInfo.installments[i].submittedBy = submittedBy;
-  //           landInfo.installments[i].submittedTo = submittedTo;
-  //           landInfo.installments[i].contact = contact;
-  //         }
-  //       }
-  //       if (allInstallments[allInstallments.length - 1].status == "done") {
-  //         landInfo.landPaymentStatus = "Done";
-  //       }
-  //       let isUpsertSuccess = await Land.upsert(landInfo);
-  //       if (isSubmitted && isUpsertSuccess)
-  //         cb(null, {
-  //           ...landInfo
-  //         })
-  //       else {
-  //         cb(`Payment for installment not added successfully, please contact support.`);
-  //       }
-  //     } else {
-  //       throw(`Land with landId ${landId} payment status is already done, please verify.`)
-  //     }
-  //   } catch (err) {
-  //     cb(err);
-  //   }
-  // }
+  /**
+   * submit installment api...
+   */
+  Land.remoteMethod('submitInstallment', {
+    accepts: [{
+        arg: 'data',
+        type: 'object',
+        required: true
+      }
+    ],
+    returns: {
+      arg: 'data',
+      type: 'object',
+      root: true
+    }
+  });
+  Land.submitInstallment = async function (data, cb) {
+    try {
+      let {landId, receivedByName, receivedByNumber, receiveDate, paidBy, receiptNumber, attachment} = data;
+      if (landId && receivedByName && receivedByNumber && receiveDate && paidBy && receiptNumber && attachment) {
+        let landInfo = await Land.findById(landId);
+        if (landInfo && (landInfo.landPaymentStatus == 'InProgress' || landInfo.landPaymentStatus == 'NotStarted')) {
+          landInfo.landPaymentStatus = 'InProgress';
+          let installment;
+          let isLastInstallment = false;
+          let installmentIndex = -1;
+          for (let i=0; i< landInfo.installments.length; i++) {
+            if (landInfo.installments[i].status == "Due") {
+              installment = landInfo.installments[i];
+              installmentIndex = i;
+              if (i == landInfo.installments.length-1) isLastInstallment = true;
+              break;
+            }
+          }
+          if (installment) {
+            installment.status = "Paid";
+            installment.receivedByName = receivedByName;
+            installment.receivedByNumber = receivedByNumber;
+            installment.receiveDate = receiveDate;
+            installment.paidBy = paidBy;
+            installment.receiptNumber = receiptNumber;
+            installment.attachment = attachment;
+            
+            landInfo.installments[installmentIndex] = installment;
+            if (isLastInstallment) landInfo.landPaymentStatus = "Completed";
+            await Land.upsert(landInfo);
+            cb(null, {
+              ...landInfo
+            })
+          } else {
+            cb(new Error("Installment not submitted successfully, please contact support, {installment object not found}."));
+          }
+        } else {
+          landInfo ? cb(new Error('Land data not found against id ' + landId + '.')) : cb(new Error('Land PaymentStatus is already completed.'));
+        }
+      } else {
+        cb(new Error('Invalid payload, payload must contain landId, receivedByName, receivedByNumber, receiveDate, paidBy, receiptNumber, attachment fields.'))
+      }
+    } catch (err) {
+      cb(new Error(err.message));
+    }
+  }
 };
