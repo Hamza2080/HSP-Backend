@@ -24,5 +24,10 @@ module.exports = function(server) {
     console.log(req.query);
     res.redirect("https://www.google.com/");
   });
+
+  router.get('/get_slack_event', (req, res) => {
+    console.log("get slack event successfully.");
+    
+  });
   server.use(router);
 };
