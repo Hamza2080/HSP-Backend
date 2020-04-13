@@ -10,6 +10,18 @@
       "type": "string",
       "required": "true"
     },
+    "khasraNumber": {
+      "type": "string",
+      "required": "true"
+    },
+    "moza": {
+      "type": "string",
+      "required": "true"
+    },
+    "khewat": {
+      "type": "string",
+      "required": "true"
+    },
     "totalLand": {
       "type": "number",
       "required": true
@@ -50,6 +62,11 @@
     },
     "additionalNotes": {
       "type": "string"
+    },
+    "attachment": {
+      "type": [
+        "string"
+      ]
     },
     "installments": {
       "type": [
