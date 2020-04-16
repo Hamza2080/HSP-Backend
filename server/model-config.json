@@ -99,5 +99,9 @@
   "attachment": {
     "dataSource": "myFile",
     "public": true
+  },
+  "expense_type": {
+    "dataSource": "mongoDB",
+    "public": true
   }
 }

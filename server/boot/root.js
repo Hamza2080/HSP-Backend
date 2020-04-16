@@ -14,7 +14,11 @@ module.exports = function(server) {
       "Content-Type": "application/octet-stream",
       "Content-Disposition": "attachment; filename=" + file
     });
-    fs.createReadStream(path.join(__dirname + '../../../storage/' + container + '/' + file)).pipe(res);
+    if(fs.existsSync(path.join(__dirname + '../../../storage/' + container + '/' + file))) {
+      fs.createReadStream(path.join(__dirname + '../../../storage/' + container + '/' + file)).pipe(res);
+    } else {
+        res.send("file not exist.");
+    }
   })
 
   router.get('/', server.loopback.status());
