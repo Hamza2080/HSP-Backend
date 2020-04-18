@@ -21,6 +21,11 @@
       "type": "date",
       "required": true,
       "defaultFn": "$now"
+    },
+    "phases" : {
+      "type" : [
+        "string"
+      ]
     }
   },
   "validations": [],

@@ -60,10 +60,6 @@
     "dataSource": "mongoDB",
     "public": true
   },
-  "plotcategory": {
-    "dataSource": "mongoDB",
-    "public": true
-  },
   "plot_payment_plan": {
     "dataSource": "mongoDB",
     "public": true
@@ -101,6 +97,10 @@
     "public": true
   },
   "expense_type": {
+    "dataSource": "mongoDB",
+    "public": true
+  },
+  "plot_category": {
     "dataSource": "mongoDB",
     "public": true
   }

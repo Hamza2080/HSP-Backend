@@ -1,23 +1,22 @@
 {
-  "name": "plotcategory",
+  "name": "plot_category",
   "base": "PersistedModel",
   "idInjection": true,
   "options": {
     "validateUpsert": true
   },
   "properties": {
-    "name": {
-      "type": "string"
-    },
-    "created_by": {
+    "categoryName": {
       "type": "string",
-      "required": true,
-      "default": "admin"
+      "required": true
     },
-    "created_at": {
-      "type": "date",
-      "required": true,
-      "defaultFn": "$now"
+    "residentialPercentage": {
+      "type": "number",
+      "required": true
+    },
+    "commercialPercentage": {
+      "type": "number",
+      "required": true
     }
   },
   "validations": [],
