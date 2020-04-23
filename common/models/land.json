@@ -31,8 +31,7 @@
       "required": true
     },
     "acquired_date": {
-      "type": "date",
-      "defaultFn": "$now"
+      "type": "date"
     },
     "installmentStartDate": {
       "type": "date"

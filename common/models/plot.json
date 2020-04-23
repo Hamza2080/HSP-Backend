@@ -7,28 +7,76 @@
   },
   "properties": {
     "plotNumber": {
-      "type": "number",
+      "type": "string",
       "required": true
     },
     "size": {
       "type": "number",
       "required": true
     },
-    "measuring_unit": {
+    "plotcategoriesId": {
+      "type": "string",
+      "required": true
+    },
+    "street": {
+      "type": "string",
+      "required": true
+    },
+    "reference": {
+      "type": "string",
+      "required": true
+    },
+    "townId": {
+      "type": "string",
+      "required": true
+    },
+    "townPhase": {
+      "type": "string",
+      "required": true
+    },
+    "additionalNotes": {
+      "type": "string",
+      "required": true
+    },
+    "planningDate": {
+      "type": "date",
+      "required": true,
+      "defaultFn": "$now"
+    },
+    "installmentStartDate": {
+      "type": "date"
+    },
+    "installmentGap": {
       "type": "string"
     },
     "totalPayment": {
       "type": "number",
       "required": true
     },
+    "downPayment": {
+      "type": "number",
+      "required": true
+    },
+    "noOfInstallment": {
+      "type": "number"
+    },
     "isOnInstallment": {
+      "type": "boolean",
+      "required": true
+    },
+    "isSold": {
       "type": "boolean",
       "required": true
     },
     "plotStatus": {
       "type": "string",
       "required": true,
-      "default": "open"
+      "default": "available"
+    },
+    "attachment": {
+      "type": [
+        "string"
+      ]
     },
     "installments": {
       "type": [
