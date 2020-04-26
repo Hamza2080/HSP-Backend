@@ -1,0 +1,41 @@
+{
+  "name": "street",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "width": {
+      "type": "string",
+      "required": true
+    },
+    "totalArea": {
+      "type": "string",
+      "required": true
+    },
+    "measuringUnit": {
+      "type": "string",
+      "required": true
+    },
+    "townPhase": {
+      "type": "string",
+      "required": true
+    },
+    "townId": {
+      "type": "string",
+      "required": true
+    },
+    "additionalNotes": {
+      "type": "string"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

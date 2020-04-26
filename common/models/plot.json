@@ -13,8 +13,8 @@
     "plotType": {
       "type": "string",
       "required": true,
-      "default" : "0",
-      "comment" : "0 for residential and 1 for commercial"
+      "default": "0",
+      "comment": "0 for residential and 1 for commercial"
     },
     "size": {
       "type": "number",

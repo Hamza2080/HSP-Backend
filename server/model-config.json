@@ -103,5 +103,9 @@
   "plot_category": {
     "dataSource": "mongoDB",
     "public": true
+  },
+  "street": {
+    "dataSource": "mongoDB",
+    "public": true
   }
 }
