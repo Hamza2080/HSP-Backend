@@ -107,5 +107,9 @@
   "street": {
     "dataSource": "mongoDB",
     "public": true
+  },
+  "park": {
+    "dataSource": "mongoDB",
+    "public": true
   }
 }
