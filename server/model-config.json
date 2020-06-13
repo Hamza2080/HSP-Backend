@@ -111,5 +111,9 @@
   "park": {
     "dataSource": "mongoDB",
     "public": true
+  },
+  "public_building": {
+    "dataSource": "mongoDB",
+    "public": true
   }
 }
