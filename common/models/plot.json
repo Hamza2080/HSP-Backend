@@ -24,7 +24,7 @@
       "type": "string",
       "required": true
     },
-    "street": {
+    "streetId": {
       "type": "string",
       "required": true
     },

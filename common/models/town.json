@@ -39,6 +39,11 @@
       "type": "hasMany",
       "model": "plot",
       "foreignKey": ""
+    },
+    "streets": {
+      "type": "hasMany",
+      "model": "street",
+      "foreignKey": ""
     }
   },
   "acls": [
