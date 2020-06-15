@@ -44,6 +44,11 @@
       "type": "hasMany",
       "model": "street",
       "foreignKey": ""
+    },
+    "employees": {
+      "type": "hasMany",
+      "model": "employee",
+      "foreignKey": ""
     }
   },
   "acls": [

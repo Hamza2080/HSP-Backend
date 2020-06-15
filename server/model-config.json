@@ -115,5 +115,9 @@
   "public_building": {
     "dataSource": "mongoDB",
     "public": true
+  },
+  "employee": {
+    "dataSource": "mongoDB",
+    "public": true
   }
 }
