@@ -28,7 +28,7 @@
       "default": "Paid",
       "example": "Paid | Due"
     },
-    "paidBy": {
+    "employeeId": {
       "type": "string",
       "required": true
     },
