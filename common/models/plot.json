@@ -79,6 +79,14 @@
       "required": true,
       "default": "available"
     },
+    "dealerId": {
+      "type": "string",
+      "required": true
+    },
+    "percentage": {
+      "type": "number",
+      "required": true
+    },
     "plotPaymentStatus": {
       "type": "string",
       "required": true,
