@@ -38,10 +38,9 @@ module.exports = function(Admin) {
    * @param Model model to be updated.
    * @param methods array of methods to expose, e.g.: ['find', 'updateAttributes'].
    */
-  Admin.getAllUsers = async function (cb) {
+  Admin.getAllUsers = async function () {
     let users = await Admin.find({where: {userRole:'Manager'}});
-    console.log(users);
-  cb(null, users);
+    return(users);
 }
 
 Admin.remoteMethod('getAllUsers', {

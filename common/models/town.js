@@ -23,7 +23,7 @@ module.exports = function (Town) {
     }
   });
 
-  Town.getTotalLand = async function (townId, cb) {
+  Town.getTotalLand = async function (townId) {
     try {
         let town = await Town.findById(townId);
         if (town) {
@@ -43,10 +43,10 @@ module.exports = function (Town) {
             await Promise.all([ ...myMap.keys() ].map(key => {
                 retLandObj[key] = myMap.get(key);
             }))
-            cb (null, {...retLandObj});
-        } else cb(`Town id is not correct.`);
+            return ({...retLandObj});
+        } else return(`Town id is not correct.`);
     } catch (err) {
-      cb(err);
+      return(err);
     }
   };
 };

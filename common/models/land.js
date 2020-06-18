@@ -155,7 +155,7 @@ module.exports = function (Land) {
       root: true
     }
   });
-  Land.submitInstallment = async function (data, cb) {
+  Land.submitInstallment = async function (data) {
     try {
       let {landId, receivedByName, receivedByNumber, receiveDate, paidBy, receiptNumber, attachment} = data;
       if (landId && receivedByName && receivedByNumber && receiveDate && paidBy && receiptNumber && attachment) {
@@ -185,20 +185,23 @@ module.exports = function (Land) {
             landInfo.installments[installmentIndex] = installment;
             if (isLastInstallment) landInfo.landPaymentStatus = "Completed";
             await Land.upsert(landInfo);
-            cb(null, {
+            return({
               ...landInfo
             })
           } else {
-            cb(new Error("Installment not submitted successfully, please contact support, {installment object not found}."));
+            return(new Error("Installment not submitted successfully, please contact support, {installment object not found}."));
           }
         } else {
-          landInfo ? cb(new Error('Land data not found against id ' + landId + '.')) : cb(new Error('Land PaymentStatus is already completed.'));
+          if (landInfo) {
+            return (new Error('Land data not found against id ' + landId + '.'))
+           } else { return(new Error('Land PaymentStatus is already completed.'));
+          }
         }
       } else {
-        cb(new Error('Invalid payload, payload must contain landId, receivedByName, receivedByNumber, receiveDate, paidBy, receiptNumber, attachment fields.'))
+        return(new Error('Invalid payload, payload must contain landId, receivedByName, receivedByNumber, receiveDate, paidBy, receiptNumber, attachment fields.'))
       }
     } catch (err) {
-      cb(new Error(err.message));
+      return(new Error(err.message));
     }
   }
 };

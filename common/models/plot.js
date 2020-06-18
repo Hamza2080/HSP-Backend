@@ -43,7 +43,7 @@ module.exports = function (Plot) {
       root: true
     }
   });
-  Plot.submitInstallment = async function (data, cb) {
+  Plot.submitInstallment = async function (data) {
     try {
       let { plotId, receivedByName, receivedByNumber, receiveDate, paidBy, receiptNumber, attachment } = data;
       if (plotId && receivedByName && receivedByNumber && receiveDate && paidBy && receiptNumber && attachment) {
@@ -73,20 +73,21 @@ module.exports = function (Plot) {
             plotInfo.installments[installmentIndex] = installment;
             if (isLastInstallment) plotInfo.plotPaymentStatus = "Completed";
             await Plot.upsert(plotInfo);
-            cb(null, {
+            return({
               ...plotInfo
             })
           } else {
-            cb(new Error("Installment not submitted successfully, please contact support, {installment object not found}."));
+            return(new Error("Installment not submitted successfully, please contact support, {installment object not found}."));
           }
         } else {
-          plotInfo ? cb(new Error('Plot data not found against id ' + plotId + '.')) : cb(new Error('Plot PaymentStatus is already completed.'));
+            if (plotInfo) return(new Error('Plot data not found against id ' + plotId + '.'))
+            else return(new Error('Plot PaymentStatus is already completed.'));
         }
       } else {
-        cb(new Error('Invalid payload, payload must contain plotId, receivedByName, receivedByNumber, receiveDate, paidBy, receiptNumber, attachment fields.'))
+        return(new Error('Invalid payload, payload must contain plotId, receivedByName, receivedByNumber, receiveDate, paidBy, receiptNumber, attachment fields.'))
       }
     } catch (err) {
-      cb(new Error(err.message));
+      return(new Error(err.message));
     }
   }
 };

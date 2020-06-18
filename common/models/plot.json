@@ -80,12 +80,10 @@
       "default": "available"
     },
     "dealerId": {
-      "type": "string",
-      "required": true
+      "type": "string"
     },
     "percentage": {
-      "type": "number",
-      "required": true
+      "type": "number"
     },
     "plotPaymentStatus": {
       "type": "string",
@@ -98,6 +96,11 @@
       ]
     },
     "installments": {
+      "type": [
+        "object"
+      ]
+    },
+    "TransferHistory": {
       "type": [
         "object"
       ]

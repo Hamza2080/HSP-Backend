@@ -23,12 +23,12 @@ module.exports = function (Street) {
         }
     });
 
-    Street.getStreetByTownId = async function (townId, cb) {
+    Street.getStreetByTownId = async function (townId) {
         try {
             let streets = await Street.find({"townId": townId});
-            cb (null, streets || []);
+            return (streets || []);
         } catch (err) {
-            cb(err);
+            return(err);
         }
     };
 };
