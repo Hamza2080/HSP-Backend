@@ -1,6 +1,33 @@
 "use strict";
 
 module.exports = function (Plot) {
+
+  Plot.afterRemote('find', async function (ctx, plots) {
+    plots.map(async plot => {
+      await putStatusInPlot(plot);
+    });
+  });
+
+  Plot.afterRemote('findById', async function (ctx, plot) {
+    await putStatusInPlot(plot);
+  });
+  
+  async function putStatusInPlot(plot) {
+    if (plot.isSold && plot.plotStatus == 'Sold') {
+      const installments = plot.installments;
+      installments.filter(installment => installment.status != "Paid");
+      installments.sort(function(a,b){
+        return new Date(b.dueDate) - new Date(a.dueDate);
+      });
+      let nextInstallment = installments[0];
+      if (new Date(nextInstallment.dueDate).getTime() <= new Date().getTime() && status === 'Due') {
+        plot.currentInstallmentStatus = "Due";
+      } else if (new Date(nextInstallment.dueDate).getTime() > new Date().getTime()) {
+        plot.currentInstallmentStatus = "Upcoming_Due";
+      }
+    } 
+  }
+
   /**
   * isExist api...
   */
