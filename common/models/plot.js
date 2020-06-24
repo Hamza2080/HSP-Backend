@@ -25,7 +25,7 @@ module.exports = function (Plot) {
       } else if (new Date(nextInstallment.dueDate).getTime() > new Date().getTime()) {
         plot.currentInstallmentStatus = "Upcoming_Due";
       }
-    } 
+    }
   }
 
   /**
@@ -70,12 +70,12 @@ module.exports = function (Plot) {
     root: true
   }
 });
-Plot.isExist = async function (data) {
+Plot.resale = async function (data) {
   try {
-    const { customerId, purchaseData, modifiedBy, plotId } = data;
+    const { customerId, purchaseDate, modifiedBy, plotId } = data;
     const soldDate = null;
 
-    if ( customerId && purchaseData && modifiedBy && plotId) {
+    if ( customerId && purchaseDate && modifiedBy && plotId) {
       let plot = await Plot.findById(plotId);
       if (plot) {
         plot.isSold = true;
@@ -83,10 +83,10 @@ Plot.isExist = async function (data) {
         transferLength = plot.TransferHistory.length;
         const purchaseFrom = plot.TransferHistory.length > 0 ? plot.TransferHistory[transferLength-1].customerId : 'Town Management';
         const plotTransferHistory = {
-          customerId, purchaseData, soldDate, purchaseFrom , modifiedBy, modifiedOn : new Date()
+          customerId, purchaseDate, soldDate, purchaseFrom , modifiedBy, modifiedOn : new Date()
         };
         if (transferLength > 0){
-          plot.TransferHistory[transferLength-1].soldDate = purchaseData;
+          plot.TransferHistory[transferLength-1].soldDate = purchaseDate;
         }
         plot.TransferHistory.push(plotTransferHistory);
         await Plot.upsert(plot);
@@ -98,7 +98,7 @@ Plot.isExist = async function (data) {
 
       // } 
     } else { 
-      const errorMessage =  `Incorect payload, plotId, customerId , purchaseData, modifiedBy is required`;
+      const errorMessage =  `Incorect payload, plotId, customerId , purchaseDate, modifiedBy is required`;
       return (new Error())
     }
   } catch (err) {
