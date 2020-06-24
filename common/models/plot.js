@@ -53,6 +53,59 @@ module.exports = function (Plot) {
       return(new Error(err.message));
     }
   }
+  
+  /**
+  * resale api...
+  */
+ Plot.remoteMethod('resale', {
+  accepts: [{
+    arg: 'data',
+    type: 'object',
+    required: true
+  }
+  ],
+  returns: {
+    arg: 'message',
+    type: 'string',
+    root: true
+  }
+});
+Plot.isExist = async function (data) {
+  try {
+    const { customerId, purchaseData, modifiedBy, plotId } = data;
+    const soldDate = null;
+
+    if ( customerId && purchaseData && modifiedBy && plotId) {
+      let plot = await Plot.findById(plotId);
+      if (plot) {
+        plot.isSold = true;
+        plot.plotStatus = "Sold";
+        transferLength = plot.TransferHistory.length;
+        const purchaseFrom = plot.TransferHistory.length > 0 ? plot.TransferHistory[transferLength-1].customerId : 'Town Management';
+        const plotTransferHistory = {
+          customerId, purchaseData, soldDate, purchaseFrom , modifiedBy, modifiedOn : new Date()
+        };
+        if (transferLength > 0){
+          plot.TransferHistory[transferLength-1].soldDate = purchaseData;
+        }
+        plot.TransferHistory.push(plotTransferHistory);
+        await Plot.upsert(plot);
+        return (`plot resale successfully`)
+      } else {
+        throw (`Plot instance against ${plotid} not exist.`);
+      }
+      // if (plot.TransferHistory.length > 0) {
+
+      // } 
+    } else { 
+      const errorMessage =  `Incorect payload, plotId, customerId , purchaseData, modifiedBy is required`;
+      return (new Error())
+    }
+  } catch (err) {
+    return(new Error(err.message));
+  }
+}
+
 
   /**
  * submit installment api...
