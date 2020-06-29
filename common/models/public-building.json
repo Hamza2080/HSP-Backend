@@ -14,8 +14,20 @@
       "type": "string",
       "required": true
     },
-    "measuringUnit": {
-      "type": "string",
+    "kanal": {
+      "type": "number",
+      "required": true
+    },
+    "marla": {
+      "type": "number",
+      "required": true
+    },
+    "sarsai": {
+      "type": "number",
+      "required": true
+    },
+    "feet": {
+      "type": "number",
       "required": true
     },
     "townId": {

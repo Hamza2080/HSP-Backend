@@ -10,7 +10,7 @@
       "type": "string",
       "required": "true"
     },
-    "khasraNumber": {
+    "areaName":{
       "type": "string",
       "required": "true"
     },
@@ -19,15 +19,25 @@
       "required": "true"
     },
     "khewat": {
-      "type": "string",
-      "required": "true"
+      "type": [
+        "string"
+      ],
+      "required": true
+    },
+    "murabba": {
+      "type": [
+        "string"
+      ],
+      "required": true
+    },
+    "khasranNumber": {
+      "type": [
+        "string"
+      ],
+      "required": true
     },
     "totalLand": {
       "type": "number",
-      "required": true
-    },
-    "measuringUnit": {
-      "type": "string",
       "required": true
     },
     "acquired_date": {
@@ -61,6 +71,22 @@
     },
     "additionalNotes": {
       "type": "string"
+    },
+    "kanal": {
+      "type": "number",
+      "required": true
+    },
+    "marla": {
+      "type": "number",
+      "required": true
+    },
+    "sarsai": {
+      "type": "number",
+      "required": true
+    },
+    "feet": {
+      "type": "number",
+      "required": true
     },
     "attachment": {
       "type": [
