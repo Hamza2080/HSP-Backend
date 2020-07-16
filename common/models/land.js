@@ -5,6 +5,35 @@ module.exports = function (Land) {
   // //validity of name field...
   Land.validatesUniquenessOf('name');
 
+  // remote method after hook
+  Land.afterRemote('find', async function (context, data, next) {
+    try {
+      await addLandlordData(data);
+      next();
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  Land.afterRemote('findById', async function (context, data, next) {
+    try {
+      await addLandlordData(data);
+      next();
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  async function addLandlordData(data) {
+    try {
+      await Promise.all(data.map(async land => {
+        const landlord = await Land.app.models.landlord.findById(land.landlordId);
+        land.landlordData = { name: landlord.name, id: landlord.id, phone: landlord.phone }
+      }));
+    } catch (err) {
+      throw (err);
+    }
+  }
   // // operation hook before save on land for checking information....
   // Land.observe("before save", async function (ctx, next) {
   //   try {
@@ -144,10 +173,10 @@ module.exports = function (Land) {
    */
   Land.remoteMethod('submitInstallment', {
     accepts: [{
-        arg: 'data',
-        type: 'object',
-        required: true
-      }
+      arg: 'data',
+      type: 'object',
+      required: true
+    }
     ],
     returns: {
       arg: 'data',
@@ -157,7 +186,7 @@ module.exports = function (Land) {
   });
   Land.submitInstallment = async function (data) {
     try {
-      let {landId, receivedByName, receivedByNumber, receiveDate, paidBy, receiptNumber, attachment} = data;
+      let { landId, receivedByName, receivedByNumber, receiveDate, paidBy, receiptNumber, attachment } = data;
       if (landId && receivedByName && receivedByNumber && receiveDate && paidBy && receiptNumber && attachment) {
         let landInfo = await Land.findById(landId);
         if (landInfo && (landInfo.landPaymentStatus == 'InProgress' || landInfo.landPaymentStatus == 'NotStarted')) {
@@ -165,11 +194,11 @@ module.exports = function (Land) {
           let installment;
           let isLastInstallment = false;
           let installmentIndex = -1;
-          for (let i=0; i< landInfo.installments.length; i++) {
+          for (let i = 0; i < landInfo.installments.length; i++) {
             if (landInfo.installments[i].status == "Due") {
               installment = landInfo.installments[i];
               installmentIndex = i;
-              if (i == landInfo.installments.length-1) isLastInstallment = true;
+              if (i == landInfo.installments.length - 1) isLastInstallment = true;
               break;
             }
           }
@@ -181,27 +210,28 @@ module.exports = function (Land) {
             installment.paidBy = paidBy;
             installment.receiptNumber = receiptNumber;
             installment.attachment = attachment;
-            
+
             landInfo.installments[installmentIndex] = installment;
             if (isLastInstallment) landInfo.landPaymentStatus = "Completed";
             await Land.upsert(landInfo);
-            return({
+            return ({
               ...landInfo
             })
           } else {
-            return(new Error("Installment not submitted successfully, please contact support, {installment object not found}."));
+            return (new Error("Installment not submitted successfully, please contact support, {installment object not found}."));
           }
         } else {
           if (landInfo) {
             return (new Error('Land data not found against id ' + landId + '.'))
-           } else { return(new Error('Land PaymentStatus is already completed.'));
+          } else {
+            return (new Error('Land PaymentStatus is already completed.'));
           }
         }
       } else {
-        return(new Error('Invalid payload, payload must contain landId, receivedByName, receivedByNumber, receiveDate, paidBy, receiptNumber, attachment fields.'))
+        return (new Error('Invalid payload, payload must contain landId, receivedByName, receivedByNumber, receiveDate, paidBy, receiptNumber, attachment fields.'))
       }
     } catch (err) {
-      return(new Error(err.message));
+      return (new Error(err.message));
     }
   }
 };
