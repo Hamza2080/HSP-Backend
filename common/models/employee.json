@@ -25,6 +25,14 @@
     "contact": {
       "type": "string",
       "required": true
+    },
+    "salary": {
+      "type": "number",
+      "required": true
+    },
+    "designation": {
+      "type": "string",
+      "required": true
     }
   },
   "validations": [],

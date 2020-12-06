@@ -2,6 +2,8 @@
 
 module.exports = function (Plot) {
 
+  Plot.validatesUniquenessOf('plotNumber');
+
   Plot.afterRemote('find', async function (ctx, plots) {
     plots.map(async plot => {
       await putStatusInPlot(plot);
