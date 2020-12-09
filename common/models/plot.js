@@ -5,13 +5,24 @@ module.exports = function (Plot) {
   Plot.validatesUniquenessOf('plotNumber');
 
   Plot.afterRemote('find', async function (ctx, plots) {
-    plots.map(async plot => {
-      await putStatusInPlot(plot);
-    });
+    await iteratePlotsAndAddInfo(plots);
   });
+
+  async function iteratePlotsAndAddInfo(plots) {
+    return new Promise(resolve => {
+      plots.map(async (plot, index) => {
+        await putStatusInPlot(plot);
+        await putCustomerDetailInPlot(plot);
+        if (index === plots.length - 1 ){
+          resolve();
+        }
+      });
+    });
+  }
 
   Plot.afterRemote('findById', async function (ctx, plot) {
     await putStatusInPlot(plot);
+    await putCustomerDetailInPlot(plot);
   });
   
   async function putStatusInPlot(plot) {
@@ -29,6 +40,35 @@ module.exports = function (Plot) {
       }
     }
   }
+
+  function putCustomerDetailInPlot(plot) {
+    return new Promise((resolve) => {
+      try {
+        if (!plot.TransferHistory) {return}
+        plot.TransferHistory.map(async (transfer, index) => {
+          if (!transfer.customerId) {return}
+          const customer = await Plot.app.models.Customer.findById(transfer.customerId);
+          if (!customer) { transfer.customer = {} }
+          else {
+            transfer.customer = {
+              name: customer.name,
+              cnic: customer.cnic,
+              contact: customer.contact,
+              address: customer.address
+            };
+          }
+
+          if (index === plot.TransferHistory.length - 1) {
+            resolve();
+          }
+        });
+      } catch(error) {
+        console.error(error);
+        resolve();
+      }
+    });
+  }
+
 
   /**
   * isExist api...
