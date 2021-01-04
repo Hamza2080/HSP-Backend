@@ -27,23 +27,20 @@ module.exports = function (Town) {
     try {
         let town = await Town.findById(townId);
         if (town) {
-            let myMap = new Map();
+          let totalLand = {
+            kanal: 0,
+            marla: 0,
+            sarsai: 0,
+            feet: 0
+          }
             let land = await Town.app.models.land.find();
             await Promise.all(land.map(async landObj => {
-                let measuringUnit = await Town.app.models.land_measuring_unit.findById(landObj.landMeasuringUnitId);
-                land["unit"] = measuringUnit.measuring_unit || "NOT_Found";
-                if (myMap.has(measuringUnit.measuring_unit)) {
-                    let total_land_size = myMap.get(measuringUnit.measuring_unit) + landObj.total_land;
-                    myMap.set(measuringUnit.measuring_unit, total_land_size);
-                }
-                else {
-                    myMap.set(measuringUnit.measuring_unit, landObj.total_land);}
-            }))
-            let retLandObj = {land};
-            await Promise.all([ ...myMap.keys() ].map(key => {
-                retLandObj[key] = myMap.get(key);
-            }))
-            return ({...retLandObj});
+              totalLand.kanal += landObj.kanal || 0;
+              totalLand.marla += landObj.marla || 0;
+              totalLand.sarsai += landObj.sarsai || 0;
+              totalLand.feet += landObj.feet || 0;
+            }));
+            return totalLand;
         } else return(`Town id is not correct.`);
     } catch (err) {
       return(err);
